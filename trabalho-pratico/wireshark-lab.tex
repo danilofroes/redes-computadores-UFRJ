@@ -1,0 +1,101 @@
+\documentclass[12pt,a4paper]{article}
+
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[portuguese]{babel}
+
+\usepackage{graphicx}
+\usepackage{enumitem}
+\usepackage[colorlinks=true, urlcolor=blue, linkcolor=black]{hyperref}
+\usepackage{geometry}
+
+\geometry{
+    a4paper,
+    left=3cm,
+    right=3cm,
+    top=3cm,
+    bottom=3cm,
+}
+
+\begin{document}
+
+\begin{center}
+    {\Large \textbf{Wireshark Lab: HTTP}} \\[0.2cm]
+    {\Large \textbf{Redes de Computadores I}} \\[0.6cm]
+    Danilo Davi Gomes Fróes \\
+    Grupo 18
+\end{center}
+
+\vspace{0.5cm}
+
+% Início do questionário
+\begin{enumerate}[itemsep=1.5em]
+    \item The Basic HTTP GET/response interaction
+
+        \begin{enumerate}[label=\theenumi.\arabic*., itemsep=1em]
+            \item Meu navegador e o servidor estão executando a versão HTTP 1.1
+            
+            \item pt-BR, pt, en-US, en \\
+            Accept-Language: pt-BR,pt;q=0.9,en-US;q=0.8,en;q=0.7\textbackslash r\textbackslash n
+            
+            \item Meu endereço de IP é 192.168.0.102 e o do \href{http://gaia.cs.umass.edu}{gaia.cs.umass.edu} é 128.119.245.12
+            
+            \item Código 200 OK
+            
+            \item 28 de outubro de 2025 às 05:59:01 GMT
+            
+            \item 128 bytes de arquivo
+            
+            \item Apenas o conteúdo do próprio site, após o cabeçalho e também um conteúdo antes do cabeçalho, que aparentemente é sobre as camadas anteriores.
+        \end{enumerate}
+    
+    \vspace{0.5cm}
+
+    \item The HTTP CONDITIONAL GET/response interaction
+    
+        \begin{enumerate}[label=\theenumi.\arabic*., itemsep=1em]
+            \item A primeira requisição não possui o ``IF-MODIFIED-SINCE''
+            
+            \item Sim, pois após o cabeçalho do HTTP, está o próprio conteúdo do site
+            
+            \item Sim, ele vem com a data e hora da última modificação
+            
+            \item Código 304 Not Modified. O servidor não retornou nenhum conteúdo, apenas o cabeçalho HTTP.
+        \end{enumerate}
+
+    \item Retrieving Long Documents
+
+        \begin{enumerate}[label=\theenumi.\arabic*., itemsep=1em]
+            \item Ele enviou 2 requisições GET. O GET do pacote 198 contém todo o texto da Bill of Rights
+            
+            \item O pacote de número 207 contém a resposta do HTTP GET
+            
+            \item Foi retornado o código 200 OK
+            
+            \item O texto Bill of Rights foi transportado por 4 segmentos TCP com um total de 4864 bytes
+        \end{enumerate}
+
+    \item HTML Documents with Embedded Objects
+
+        \begin{enumerate}[label=\theenumi.\arabic*., itemsep=1em]
+            \item Foram enviadas 3 requisições GET, sendo elas:
+            \begin{itemize}
+                \item /wireshark-labs/HTTP-wireshark-file4.html
+                \item /pearson.png
+                \item /8E\_cover\_small.jpg
+            \end{itemize}
+
+            \item Foram baixadas sequencialmente, pois ele faz a requisição de uma, recebe essa que acabou de fazer requisição, depois faz requisição da outra. Se fosse em paralelo ele teria feito primeiro as duas requisições e depois aguardado o retorno.
+        \end{enumerate}
+
+    \item HTTP Authentication
+
+        \begin{enumerate}[label=\theenumi.\arabic*., itemsep=1em]
+            \item O código retorno foi 401 Unauthorized
+
+            \item O campo Authorization com as credenciais que eu usei
+        \end{enumerate}
+    
+\end{enumerate}
+
+\end{document}
