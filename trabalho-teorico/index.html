@@ -3,6 +3,461 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LoRa - Trabalho Teórico [EEL878] Redes de Computadores I</title>
+    <title>LoRa & LoRaWAN | Redes de Computadores 1 - UFRJ</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --pcb-dark: #070e14;
+            --pcb-board: #0b151e;
+            --copper-trace: #d4af37; /* Dourado */
+            --led-rx: #00ffcc; /* Ciano */
+            --led-tx: #ff3366;
+            --text-main: #a9b7c6;
+            --text-light: #e0e6ed;
+            --font-tech: 'Roboto Mono', monospace;
+            --font-display: 'Orbitron', sans-serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: var(--font-tech);
+            background-color: var(--pcb-dark);
+            color: var(--text-main);
+            line-height: 1.7;
+            /* Fundo SVG Data URI */
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M54.627 0l.83.83v58.34l-.83.83H5.373l-.83-.83V.83l.83-.83h49.254zM53 2H7v56h46V2zM15 15h30v30H15V15zm2 2v26h26V17H17z' fill='%23132230' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");
+        }
+
+        /* HEADER */
+        header {
+            position: relative;
+            height: 60vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at center, #112233 0%, var(--pcb-dark) 70%);
+            border-bottom: 2px solid var(--copper-trace);
+            overflow: hidden;
+            text-align: center;
+        }
+
+        .antenna {
+            position: relative;
+            width: 20px;
+            height: 20px;
+            background-color: var(--led-rx);
+            border-radius: 50%;
+            margin-bottom: 30px;
+            box-shadow: 0 0 20px var(--led-rx);
+            z-index: 2;
+        }
+
+        .wave {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            border: 2px solid var(--led-rx);
+            border-radius: 50%;
+            opacity: 0;
+            animation: pulse-wave 3s infinite cubic-bezier(0.215, 0.61, 0.355, 1);
+        }
+
+        .wave:nth-child(2) { animation-delay: 1s; }
+        .wave:nth-child(3) { animation-delay: 2s; }
+
+        @keyframes pulse-wave {
+            0% { width: 20px; height: 20px; opacity: 1; border-width: 4px; }
+            100% { width: 600px; height: 600px; opacity: 0; border-width: 1px; }
+        }
+
+        header h1 {
+            font-family: var(--font-display);
+            font-size: 4rem;
+            color: var(--text-light);
+            text-shadow: 0 0 10px rgba(255,255,255,0.2);
+            z-index: 2;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.2rem;
+            color: var(--copper-trace);
+            z-index: 2;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        /* NAVEGAÇÃO SUPERIOR ESTILO PAINEL */
+        nav {
+            position: sticky;
+            top: 0;
+            background: rgba(11, 21, 30, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--copper-trace);
+            z-index: 100;
+            display: flex;
+            justify-content: center;
+            padding: 1rem 0;
+        }
+
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 15px;
+            flex-wrap: wrap;
+            justify-content: center;
+            max-width: 1200px;
+        }
+
+        nav ul li a {
+            color: var(--text-main);
+            text-decoration: none;
+            font-size: 0.85rem;
+            padding: 5px 12px;
+            border: 1px solid #2a3f54;
+            border-radius: 4px;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        nav ul li a:hover, nav ul li a.active {
+            border-color: var(--led-rx);
+            color: var(--led-rx);
+            background: rgba(0, 255, 204, 0.1);
+            box-shadow: inset 0 0 10px rgba(0, 255, 204, 0.2);
+        }
+
+        /* BARRA DE PROGRESSO DE LEITURA */
+        .progress-container {
+            width: 100%;
+            height: 3px;
+            background: #111;
+            position: absolute;
+            bottom: -3px;
+            left: 0;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: var(--led-rx);
+            width: 0%;
+        }
+
+        /* CONTEÚDO PRINCIPAL */
+        main {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        /* MÓDULOS */
+        section {
+            background-color: var(--pcb-board);
+            margin-bottom: 50px;
+            padding: 40px;
+            border: 1px solid #1a2c3f;
+            border-radius: 8px;
+            position: relative;
+            box-shadow: 10px 10px 30px rgba(0,0,0,0.5);
+        }
+
+        /* Pinos do Microcontrolador laterais */
+        section::before, section::after {
+            content: '';
+            position: absolute;
+            top: 20px;
+            bottom: 20px;
+            width: 6px;
+            background: repeating-linear-gradient(
+                to bottom,
+                #8892b0,
+                #8892b0 10px,
+                transparent 10px,
+                transparent 20px
+            );
+        }
+        section::before { left: -3px; }
+        section::after { right: -3px; }
+
+        /* Detalhe de Trilha de Cobre no canto */
+        .trace-detail {
+            position: absolute;
+            top: 0;
+            right: 20px;
+            width: 40px;
+            height: 2px;
+            background-color: var(--copper-trace);
+        }
+        .trace-detail::after {
+            content: '';
+            position: absolute;
+            right: -10px;
+            top: -4px;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            border: 2px solid var(--copper-trace);
+            background: var(--pcb-board);
+        }
+
+        h2 {
+            font-family: var(--font-display);
+            color: var(--led-rx);
+            font-size: 1.8rem;
+            margin-bottom: 20px;
+            display: inline-block;
+            border-bottom: 2px solid #1a2c3f;
+            padding-bottom: 10px;
+        }
+        
+        h2 .section-num {
+            color: var(--text-main);
+            font-size: 1rem;
+            margin-right: 10px;
+            opacity: 0.5;
+        }
+
+        h3 {
+            color: var(--text-light);
+            margin: 25px 0 10px 0;
+            font-size: 1.2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        h3::before {
+            content: '>>';
+            color: var(--led-tx);
+            margin-right: 10px;
+            font-size: 0.9rem;
+        }
+
+        p { margin-bottom: 15px; }
+
+        ul { margin-left: 20px; margin-bottom: 20px; list-style-type: square; }
+        li { margin-bottom: 8px; }
+        li strong { color: var(--copper-trace); }
+
+        /* BLOCO DE CÓDIGO TIPO TERMINAL SERIAL */
+        .serial-monitor {
+            background-color: #050a0f;
+            border: 1px solid #1f2d3d;
+            border-top: 25px solid #1f2d3d; /* Barra superior do terminal */
+            border-radius: 6px;
+            padding: 20px;
+            position: relative;
+            margin: 20px 0;
+            color: #4af626; /* Verde terminal */
+            overflow-x: auto;
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.8);
+        }
+
+        .serial-monitor::before {
+            content: 'COM3 - 9600 baud';
+            position: absolute;
+            top: -20px;
+            left: 10px;
+            color: #8892b0;
+            font-size: 0.75rem;
+            font-family: sans-serif;
+        }
+
+        /* RESPONSIVIDADE */
+        @media (max-width: 768px) {
+            header h1 { font-size: 2.5rem; }
+            nav ul { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 5px; justify-content: flex-start; margin: 0 15px; }
+            nav ul::-webkit-scrollbar { height: 4px; }
+            nav ul::-webkit-scrollbar-thumb { background: var(--copper-trace); border-radius: 2px; }
+            section { padding: 30px 20px; }
+        }
+    </style>
 </head>
+<body>
+
+    <header>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="wave"></div>
+        <div class="antenna"></div>
+        <h1>LoRa & LoRaWAN</h1>
+        <p>Redes de Computadores I | UFRJ</p>
+    </header>
+
+    <nav>
+        <ul>
+            <li><a href="#intro" class="active">01. Intro</a></li>
+            <li><a href="#fisica">02. Físico</a></li>
+            <li><a href="#enlace">03. Enlace/Rede</a></li>
+            <li><a href="#seguranca">04. Segurança</a></li>
+            <li><a href="#comparativa">05. Análise</a></li>
+            <li><a href="#pratica">06. Prática</a></li>
+            <li><a href="#conclusao">07. Fim</a></li>
+        </ul>
+        <div class="progress-container">
+            <div class="progress-bar" id="myBar"></div>
+        </div>
+    </nav>
+
+    <main>
+        <section id="intro">
+            <div class="trace-detail"></div>
+            <h2><span class="section-num">0x01</span>Introdução</h2>
+            
+            <h3>IoT (Internet das Coisas)</h3>
+            <p>O ecossistema onde dispositivos, sensores e atuadores trocam informações para automatizar e monitorar processos físicos e digitais de forma autônoma.</p>
+            
+            <h3>LPWAN (Low Power Wide Area Network)</h3>
+            <p>Redes projetadas especificamente para interconectar dispositivos alimentados por bateria com baixas taxas de transmissão de bits por longas distâncias.</p>
+            
+            <h3>Diferença: LoRa e LoRaWAN</h3>
+            <p><strong>LoRa</strong> é a técnica de modulação (Camada Física), a maneira como o rádio emite o sinal. <strong>LoRaWAN</strong> é o protocolo de controle de acesso ao meio (MAC), a arquitetura de rede que define como os dispositivos se comunicam de forma organizada e segura.</p>
+        </section>
+
+        <section id="fisica">
+            <div class="trace-detail"></div>
+            <h2><span class="section-num">0x02</span>Modulação LoRa (Física)</h2>
+            
+            <h3>Chirp Spread Spectrum (CSS)</h3>
+            <p>Técnica derivada de radares militares. O sinal é espalhado em uma largura de banda usando "chirps" (pulsos onde a frequência aumenta ou diminui linearmente). Garante robustez extrema contra interferências e efeito Doppler.</p>
+            
+            <h3>Parâmetros de Rádio-Frequência</h3>
+            <ul>
+                <li><strong>Spreading Factor (SF):</strong> Varia de SF7 a SF12. Um SF maior aumenta o tempo no ar (Time on Air), dobrando o consumo de energia, mas aumentando drasticamente a sensibilidade (alcance) do receptor.</li>
+                <li><strong>Bandwidth (BW):</strong> Largura de banda do canal (ex: 125 kHz, 250 kHz, 500 kHz).</li>
+                <li><strong>Coding Rate (CR):</strong> Adiciona bits redundantes para correção de erros (Forward Error Correction), melhorando a resiliência em canais ruidosos.</li>
+            </ul>
+
+            <h3>Link Budget</h3>
+            <p>A equação fundamental do rádio. É o balanço entre a potência de transmissão, os ganhos das antenas e as perdas de propagação. No LoRa, o Link Budget pode exceder 150 dB, permitindo conexões acima de 15 km em área rural.</p>
+        </section>
+
+        <section id="enlace">
+            <div class="trace-detail"></div>
+            <h2><span class="section-num">0x03</span>Protocolo LoRaWAN</h2>
+            
+            <h3>Arquitetura</h3>
+            <p>Possui topologia estrela de estrelas (Star-of-Stars). End-nodes transmitem dados de forma assíncrona. Os pacotes são captados por múltiplos Gateways e encaminhados via rede IP para um <strong>Network Server</strong> centralizado.</p>
+            
+            <h3>Classes de Dispositivos</h3>
+            <ul>
+                <li><strong>Classe A (Bateria Otimizada):</strong> O dispositivo dorme a maior parte do tempo. Abre apenas duas curtas janelas de recepção (RX1 e RX2) logo após transmitir.</li>
+                <li><strong>Classe B (Beacon):</strong> O dispositivo sincroniza com a rede via beacons periódicos dos gateways, abrindo janelas extras de recepção programadas.</li>
+                <li><strong>Classe C (Contínua):</strong> Janela de recepção constantemente aberta. Ideal para atuadores ligados à rede elétrica (sem restrição de energia).</li>
+            </ul>
+        </section>
+
+        <section id="seguranca">
+            <div class="trace-detail"></div>
+            <h2><span class="section-num">0x04</span>Segurança</h2>
+            
+            <h3>Criptografia Ponta-a-Ponta</h3>
+            <p>Emprega criptografia AES-128 bit. A segurança é implementada em duas camadas distintas, separando o provedor da rede do provedor da aplicação.</p>
+            
+            <h3>Chaves de Sessão</h3>
+            <ul>
+                <li><strong>NwkSKey (Network Session Key):</strong> Utilizada para calcular e verificar o MIC (Message Integrity Code), autenticando o dispositivo no Network Server.</li>
+                <li><strong>AppSKey (Application Session Key):</strong> Utilizada para criptografar o payload da aplicação. O Network Server não consegue ler os dados do sensor, apenas roteá-los.</li>
+            </ul>
+
+            <h3>OTAA e ABP</h3>
+            <p><strong>OTAA (Over-The-Air Activation)</strong> é o processo de "handshake" onde as chaves de sessão são geradas dinamicamente. No <strong>ABP (Activation By Personalization)</strong>, as chaves são gravadas diretamente no firmware do dispositivo, sendo menos flexível e seguro a longo prazo.</p>
+        </section>
+
+        <section id="comparativa">
+            <div class="trace-detail"></div>
+            <h2><span class="section-num">0x05</span>Análise Comparativa</h2>
+            
+            <h3>LoRaWAN vs NB-IoT e Sigfox</h3>
+            <p>O <strong>NB-IoT</strong> opera em espectro licenciado (redes celulares), oferecendo maior banda e menor latência, porém com custo de hardware e operação maiores. O <strong>Sigfox</strong> também é LPWAN, mas foca em ultra banda estreita e modelo de negócios proprietário (você paga a assinatura da rede deles). LoRaWAN permite criar redes públicas ou privadas sem pagar licença de frequência.</p>
+            
+            <h3>LoRaWAN vs Redes Locais</h3>
+            <p>Wi-Fi e Bluetooth (BLE) são eficientes para dados pesados a poucos metros de distância. LoRaWAN sacrifica a velocidade (transmitindo apenas bytes de dados) para alcançar quilômetros de distância atravessando paredes e vegetação.</p>
+        </section>
+
+        <section id="pratica">
+            <div class="trace-detail"></div>
+            <h2><span class="section-num">0x06</span>Implementação Prática</h2>
+            
+            <h3>Circuito e Componentes</h3>
+            <p>Hardware: Placa de desenvolvimento ESP32 acoplada a um transceiver LoRa SX1276 (915 MHz para o Brasil). Sensores analógicos ou I2C (ex: BME280) conectados aos GPIOs.</p>
+            
+            <h3>Código de Transmissão (C/C++)</h3>
+            <div class="serial-monitor">
+#include &lt;lmic.h&gt;
+#include &lt;hal/hal.h&gt;
+
+// Chaves ABP para o The Things Network (TTN)
+static const PROGMEM u1_t NWKSKEY[16] = { 0x00, 0x11, /*...*/ };
+static const u1_t PROGMEM APPSKEY[16] = { 0x22, 0x33, /*...*/ };
+static const u4_t DEVADDR = 0x26011ABC; 
+
+void do_send(osjob_t* j){
+    // Verifica se já não há uma transmissão ocorrendo
+    if (LMIC.opmode & OP_TXRXPEND) {
+        Serial.println(F("OP_TXRXPEND, transmissao cancelada"));
+    } else {
+        // Prepara dados de telemetria
+        uint8_t payload[] = "TEMP: 24.5C";
+        // Envia na porta 1
+        LMIC_setTxData2(1, payload, sizeof(payload)-1, 0);
+        Serial.println(F("Pacote na fila de envio..."));
+    }
+}
+            </div>
+
+            <h3>Testes da Implementação</h3>
+            <p>Análise de logs no console do Gateway. Avaliação de <strong>RSSI</strong> (indicando a força do sinal bruto) e <strong>SNR</strong> (qualidade do sinal acima do ruído base), medindo a degradação do pacote conforme a distância aumenta do prédio do NCE ou do bloco da aula.</p>
+        </section>
+
+        <section id="conclusao">
+            <div class="trace-detail"></div>
+            <h2><span class="section-num">0x07</span>Conclusão e Referências</h2>
+            <p>A tecnologia LoRaWAN se prova fundamental para a viabilização de cidades inteligentes, monitoramento estrutural e agronegócio, preenchendo a lacuna entre redes locais de alta velocidade e redes celulares de alto custo.</p>
+            
+            <h3>Referências Bibliográficas</h3>
+            <ul>
+                <li>LoRa Alliance. <em>"LoRaWAN® 1.1.0 Specification"</em>.</li>
+                <li>Augustin, A. et al. <em>"A Study of LoRa: Long Range & Low Power Networks for the Internet of Things"</em>. Sensors, 2016.</li>
+                <li>Kurose, J. F., & Ross, K. W. <em>"Redes de Computadores e a Internet: Uma Abordagem Top-Down"</em>.</li>
+            </ul>
+        </section>
+    </main>
+
+    <script>
+        // Barra de progresso de leitura
+        window.onscroll = function() {
+            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            let scrolled = (winScroll / height) * 100;
+            document.getElementById("myBar").style.width = scrolled + "%";
+            
+            // Lógica do ScrollSpy (Atualizar menu ativo)
+            let sections = document.querySelectorAll('section');
+            let navLinks = document.querySelectorAll('nav ul li a');
+            
+            sections.forEach(sec => {
+                let top = window.scrollY;
+                let offset = sec.offsetTop - 100;
+                let height = sec.offsetHeight;
+                let id = sec.getAttribute('id');
+
+                if(top >= offset && top < offset + height) {
+                    navLinks.forEach(links => {
+                        links.classList.remove('active');
+                        document.querySelector('nav ul li a[href*=' + id + ']').classList.add('active');
+                    });
+                }
+            });
+        };
+    </script>
+</body>
 </html>
