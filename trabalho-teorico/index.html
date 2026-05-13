@@ -290,6 +290,7 @@
         <div class="antenna"></div>
         <h1>LoRa & LoRaWAN</h1>
         <p>Redes de Computadores I | UFRJ</p>
+        <p style="font-size: 0.8rem;">Danilo Davi Gomes Fróes</p>
     </header>
 
     <nav>
@@ -313,13 +314,68 @@
             <h2><span class="section-num">0x01</span>Introdução</h2>
             
             <h3>IoT (Internet das Coisas)</h3>
-            <p>O ecossistema onde dispositivos, sensores e atuadores trocam informações para automatizar e monitorar processos físicos e digitais de forma autônoma.</p>
+            <p>
+                IoT (Internet of Things) é uma rede de conexão de objetos físicos de uso diário, que recebem incorporações de sensores, softwares, dentre outras tecnologias.
+                Em outros termos, a IoT transforma itens comuns em "dispositivos inteligentes", permitindo que eles se conectem, coletem e troquem dados via internet ou outro tipo de comunicação com outros dispositivos e sistemas.
+            </p>
+            <p>
+                Um dos pilares da transformação digital tem sido a IoT, que tem a capacidade de conectar o mundo físico ao mundo digital.
+                Ela possui 3 fatores principais de destaque:
+
+                <ul>
+                    <li><strong>Eficiência e Automação Operacional:</strong> A IoT reduz significativamente processos manuais. Dispositivos conseguem monitor a si mesmos 24 horas por dia e otimizar suas próprias rotinas.</li>
+                    <li><strong>Tomada de Decisão Baseada em Dados:</strong> Esses dispositivos conseguem gerar um alto volume de dados em tempo real, permitindo a analise de tendências e antecipações de eventos. Transformando decisões que antes eram reativas para preditivas de forma automática.</li>
+                    <li><strong>Redução de Custos e Sustentabilidade:</strong> Com dispositivos IoT é possível monitor de perto consumos de energia, água e matérias-primas com intuito de evitar desperdício. Eles também são desenvolvidos para ter uma boa eficiência energética.</li>
+                </ul>
+            </p>
+            <p>
+                Existem diversas aplicações possíveis para IoT, a versatilidade de componentes de baixo custo e a popularização de automação e dispositivos interconectados permitiu que diversos setores explorassem seu uso.
+                As principais aplicações incluem:
+
+                <ul>
+                    <li><strong>Indústria 4.0 (IIoT - Industrial IoT):</strong> Uso de sensores em linhas de produção para prever falhas mecânicas antes que elas ocorram (manutenção preditiva), além de rastrear estoques e gerenciar a logística automaticamente em armazéns.</li>
+                    <li><strong>Casas Inteligentes (Smart Homes):</strong> Integração de dispositivos de luz, fechaduras biométricas, assistentes de voz e eletrodomésticos para automatizar tarefas cotidianas e aumentar a segurança.</li>
+                    <li><strong>Cidades Inteligentes:</strong> Sistemas de gerenciamento de tráfego com semáforos que se adaptam em tempo real ao fluxo de carros, além de sensores de iluminação pública e gerenciamento de coleta de lixo.</li>
+                    <li><strong>Agricultura Inteligente (Agro 4.0):</strong> Sensores de solo e drones ajudam os agricultores a medir com precisão a umidade, os níveis de nutrientes e o clima, permitindo aplicar água e fertilizantes apenas onde é estritamente necessário.</li>
+                    <li><strong>Saúde Conectada:</strong> Dispositivos vestíveis (wearables) que medem e transmitem os sinais vitais do paciente diretamente para o sistema do hospital, permitindo um acompanhamento médico contínuo e a distância.</li>
+                </ul>
+            </p>
             
             <h3>LPWAN (Low Power Wide Area Network)</h3>
-            <p>Redes projetadas especificamente para interconectar dispositivos alimentados por bateria com baixas taxas de transmissão de bits por longas distâncias.</p>
-            
-            <h3>Diferença: LoRa e LoRaWAN</h3>
-            <p><strong>LoRa</strong> é a técnica de modulação (Camada Física), a maneira como o rádio emite o sinal. <strong>LoRaWAN</strong> é o protocolo de controle de acesso ao meio (MAC), a arquitetura de rede que define como os dispositivos se comunicam de forma organizada e segura.</p>
+            <p>
+                Com essa crescente demanda por dispositivos IoT, veio crescendo a necessidade de novos tipos de conexão. No início, a conectividade se baseava em
+                Wi-Fi (WLAN), Bluetooth (WPAN) ou Redes de Celulares (WWAN), porém, tanto para Bluetooth e Wi-Fi, a principal barreira é o seu alcance, que é tipicamente baixo e dificulta comunicações a uma distância considerável.
+                Já as Redes de Celulares, por mais que conseguissem chegar a longas distâncias, é muito pouco eficiente energeticamente, pois possui um grande consumo de energia e também é cara para aplicações em grande escala.
+            </p>
+            <p>
+                O LPWAN (Rede de Longo Alcance e Baixo Consumo de Energia) veio com a ideia de suprir esse problema na Internet das Coisas. 
+                Ele resolveu o dilema da conectividade sacrificando a velocidade de internet, mas ganhando em eficiência energética e alcance.
+            </p>
+            <p>
+                O LPWAN possui principalmente 3 pilares:
+
+                <ul>
+                    <li><strong>Baixo Consumo de Energia (Low Power):</strong> O LPWAN não transmite muitos dados como vídeos ou fotos, ele transmite pacotes de dados de alguns bytes, além disso, eles possuem sistemas para ficarem em standby enquanto não é usado. Dispositivos de LPWAN podem funcionar com baterias ou pilhas simples por anos sem precisarem ser trocadas.</li>
+                    <li><strong>Longo Alcance (Wide Area):</strong> Uma única antena LPWAN pode cobrir de 2 a 5 quilômetros em áreas urbanas densas (atravessando concreto e subsolos) e até 30 quilômetros em áreas rurais abertas.</li>
+                    <li><strong>Baixo Custo:</strong> Tanto o hardware (o chip de rádio dentro do sensor) quanto o custo de assinar a rede são frações de centavos se comparados às redes de celular tradicionais.</li>
+                </ul>
+            </p>
+
+
+            <h3>Ecossistema LoRa (LoRa & LoRaWAN)</h3>
+            <p>
+                Com o universo de dispositivos inteligentes (IoTs) e com a categoria LPWAN de redes de longo alcance, temos uma tecnologia específica que se destaca neste cenário, o <strong>ecossistema LoRa.</strong>
+            </p>
+            <p>
+                Dentro do ecossistema temos uma diferença fundamental, o LoRa, que é a modulação física e o protocolo de rede, o LoRaWAN.
+                Basicamente, podemos ver o LoRa sendo as cordas vocais e ondas sonoras para emitir sons em uma comunicação humana, já o LoRaWAN seria o idioma e as regras de comunicação que temos para uma conversa fluir.
+
+                <ul>
+                    <li><strong>LoRa (Modulação Física):</strong> É uma tecnologia de rádio patenteada pela empresa <i>Semtech</i>. Fica na camada física da rede e usa uma técnica chamada <i>Chirp Spread Spectrum</i> (CSS), que modula as ondas de rádio de uma forma que elas conseguem viajar quilômetros de distância e ser captadas mesmo com muito ruído ao redor. O LoRa irá definir como a onda viaja pelo ar.</li>
+                    <li><strong>LoRaWAN (Protocolo de Rede):</strong> É o software, o protocolo de comunicação (camada MAC) gerenciado pela <i>LoRa Alliance</i> (associação aberta sem fins lucrativos). Ele define como os dispositivos conversam com a rede: de que forma os dados são empacotados, como a criptografia funciona, e quando um dispositivo pode transmitir ou deve dormir para poupar bateria.</li>
+                </ul>
+            </p>
+
         </section>
 
         <section id="fisica">
