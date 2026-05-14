@@ -22,6 +22,9 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
+        }
+
+        html {
             scroll-behavior: smooth;
         }
 
@@ -74,13 +77,13 @@
         .wave:nth-child(3) { animation-delay: 2s; }
 
         @keyframes pulse-wave {
-            0% { width: 20px; height: 20px; opacity: 1; border-width: 4px; }
+            0%   { width: 20px; height: 20px; opacity: 1; border-width: 4px; }
             100% { width: 600px; height: 600px; opacity: 0; border-width: 1px; }
         }
 
         header h1 {
             font-family: var(--font-display);
-            font-size: 4rem;
+            font-size: clamp(2rem, 6vw, 4rem);
             color: var(--text-light);
             text-shadow: 0 0 10px rgba(255,255,255,0.2);
             z-index: 2;
@@ -95,7 +98,7 @@
             letter-spacing: 3px;
         }
 
-        /* NAVEGAÇÃO SUPERIOR ESTILO PAINEL */
+        /* NAVEGAÇÃO */
         nav {
             position: sticky;
             top: 0;
@@ -104,8 +107,9 @@
             border-bottom: 1px solid var(--copper-trace);
             z-index: 100;
             display: flex;
-            justify-content: center;
-            padding: 1rem 0;
+            flex-direction: column;
+            align-items: center;
+            padding: 1rem 0 0;
         }
 
         nav ul {
@@ -129,27 +133,33 @@
             letter-spacing: 1px;
         }
 
-        nav ul li a:hover, nav ul li a.active {
+        nav ul li a:hover,
+        nav ul li a.active {
             border-color: var(--led-rx);
             color: var(--led-rx);
             background: rgba(0, 255, 204, 0.1);
             box-shadow: inset 0 0 10px rgba(0, 255, 204, 0.2);
         }
 
-        /* BARRA DE PROGRESSO DE LEITURA */
+        nav ul li a:focus-visible {
+            outline: 2px solid var(--led-rx);
+            outline-offset: 2px;
+            border-color: var(--led-rx);
+            color: var(--led-rx);
+            background: rgba(0, 255, 204, 0.1);
+        }
+
         .progress-container {
             width: 100%;
             height: 3px;
             background: #111;
-            position: absolute;
-            bottom: -3px;
-            left: 0;
         }
 
         .progress-bar {
             height: 100%;
             background: var(--led-rx);
             width: 0%;
+            transition: width 0.1s linear;
         }
 
         /* CONTEÚDO PRINCIPAL */
@@ -168,6 +178,7 @@
             border-radius: 8px;
             position: relative;
             box-shadow: 10px 10px 30px rgba(0,0,0,0.5);
+            scroll-margin-top: 75px;
         }
 
         /* Pinos do Microcontrolador laterais */
@@ -186,7 +197,7 @@
             );
         }
         section::before { left: -3px; }
-        section::after { right: -3px; }
+        section::after  { right: -3px; }
 
         /* Detalhe de Trilha de Cobre no canto */
         .trace-detail {
@@ -243,7 +254,18 @@
 
         p { margin-bottom: 15px; }
 
-        a { color: var(--text-light)}
+        a {
+            color: var(--text-light);
+            transition: color 0.2s;
+        }
+        a:hover {
+            color: var(--led-rx);
+        }
+        a:focus-visible {
+            outline: 2px solid var(--led-rx);
+            outline-offset: 2px;
+            border-radius: 2px;
+        }
 
         ul { margin-left: 20px; margin-bottom: 20px; list-style-type: square; }
         li { margin-bottom: 8px; }
@@ -275,11 +297,28 @@
 
         /* RESPONSIVIDADE */
         @media (max-width: 768px) {
-            header h1 { font-size: 2.5rem; }
-            nav ul { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 5px; justify-content: flex-start; margin: 0 15px; }
+            nav ul {
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 10px;
+                justify-content: flex-start;
+                margin: 0 15px;
+                scrollbar-width: thin;
+                scrollbar-color: var(--copper-trace) transparent;
+            }
             nav ul::-webkit-scrollbar { height: 4px; }
-            nav ul::-webkit-scrollbar-thumb { background: var(--copper-trace); border-radius: 2px; }
+            nav ul::-webkit-scrollbar-thumb {
+                background: var(--copper-trace);
+                border-radius: 2px;
+            }
+
             section { padding: 30px 20px; }
+
+            section::before,
+            section::after {
+                display: none;
+            }
         }
     </style>
 </head>
@@ -518,31 +557,31 @@ void do_send(osjob_t* j){
     </main>
 
     <script>
-        // Barra de progresso de leitura
-        window.onscroll = function() {
-            let winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-            let height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-            let scrolled = (winScroll / height) * 100;
-            document.getElementById("myBar").style.width = scrolled + "%";
-            
-            // Lógica do ScrollSpy (Atualizar menu ativo)
-            let sections = document.querySelectorAll('section');
-            let navLinks = document.querySelectorAll('nav ul li a');
-            
-            sections.forEach(sec => {
-                let top = window.scrollY;
-                let offset = sec.offsetTop - 100;
-                let height = sec.offsetHeight;
-                let id = sec.getAttribute('id');
+        window.addEventListener('scroll', function () {
+            // Barra de Progresso
+            const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+            const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+            const scrolled = (winScroll / height) * 100;
+            document.getElementById('myBar').style.width = scrolled + '%';
 
-                if(top >= offset && top < offset + height) {
-                    navLinks.forEach(links => {
-                        links.classList.remove('active');
-                        document.querySelector('nav ul li a[href*=' + id + ']').classList.add('active');
-                    });
+            // ScrollSpy
+            const sections = document.querySelectorAll('section[id]');
+            const navLinks = document.querySelectorAll('nav ul li a');
+            let currentId = '';
+
+            sections.forEach(sec => {
+                const offset = sec.offsetTop - 100;
+                if (window.scrollY >= offset && window.scrollY < offset + sec.offsetHeight) {
+                    currentId = sec.getAttribute('id');
                 }
             });
-        };
+
+            if (currentId) {
+                navLinks.forEach(link => link.classList.remove('active'));
+                const activeLink = document.querySelector('nav ul li a[href="#' + currentId + '"]');
+                if (activeLink) activeLink.classList.add('active');
+            }
+        });
     </script>
 </body>
 </html>
