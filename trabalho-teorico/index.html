@@ -911,8 +911,85 @@
                 window.addEventListener('load', updateSimulator);
             </script>
 
-
             <h3>Link Budget</h3>
+            <p>
+                O <i>Link Budget</i> (ou Balanço de Enlace) é a contabilidade de todos os ganhos e perdas de potência que um sinal de rádio sofre desde o momento em que sai do circuito transmissor
+                até chegar ao circuito receptor. Em um sistema de rádio, para que a comunicação seja bem-sucedida, a potência do sinal recebido (\(P_{RX}\)) deve ser maior ou igual à sensibilidade mínima do receptor (\(S\)).
+            </p>
+            <p>
+                A equação geral do balanço de enlace é expressa em decibéis (dB) e potências em dBm:
+                $$P_{RX} = P_{TX} + G_{TX} - L_{path} + G_{RX}$$
+                Onde:
+            </p>
+            <ul>
+                <li>
+                    <strong>\(P_{TX}\):</strong> Potência de saída do transmissor (em dBm). Em LoRa, costuma ser 14dBm ou 20dBm (limitado por regulações, como a Anatel aqui no Brasil).
+                </li>
+                <li>
+                    <strong>\(G_{TX} \text{e} G_{RX}\):</strong> Ganhos das antenas transmissora e receptora (em dBi).
+                </li>
+                <li>
+                    <strong>\(L_{path}\):</strong> Perda de propagação no espaço livre e atenuações por obstáculos (em dB).
+                </li>
+            </ul>
+            <p>
+                A "mágica" do LoRa para atingir quilômetros de distância não está em transmitir com muita força (\(P_{TX}\) alto), mas sim em ter um receptor com uma sensibilidade (\(S\)) incrivelmente baixa.
+            </p>
+
+            <h4>Sensibilidade do LoRa</h4>
+            <p>
+                A sensibilidade define o menor nível de potência de sinal que o hardware do gateway ou <i>end-node</i> consegue escutar e decodificar com sucesso. No LoRa, ela é calculada pela seguinte equação:
+                $$S = -174 + 10\log_{10}(BW) + NF + SNR_{lim}$$
+                Analisando cada termo:
+            </p>
+            <ul>
+                <li>
+                    <strong>-174 dBm/Hz:</strong> É o piso de ruído térmico à temperatura ambiente. É uma constante física.
+                </li>
+                <li>
+                    <strong>\(10\log_{10}(BW)\): </strong> O ruído captado aumenta com a largura de banda. Uma banda de 125 kHz adiciona cerca de 51 dB ao ruído térmico.
+                </li>
+                <li>
+                    <strong>\(NF\) (Noise Figure):</strong> É o ruído adicionado pelo próprio hardware do receptor (amplificadores LNA, filtros). Em chips como o Semtech SX1276, o \(NF\) é de aproximadamente 6 dB.
+                </li>
+                <li>
+                    <strong>\(SNR_{lim}\):</strong> É aqui que o <i>Spreading Factor</i> (SF) atua. É a Relação Sinal-Ruído mínima necessária para o demodulador CSS funcionar. Como vimos, o ganho de processamento do LoRa permite demodular sinais
+                    abaixo do piso de ruído. Para SF12, o \(SNR_{lim}\) chega a -20dB.
+                </li>
+            </ul>
+            <img src="images/atena_propag.jpg" width="100%">
+
+            <h4>Maximum Link Budget</h4>
+            <p>
+                O Limite Máximo do Balanço de Enlace (\(MCL\) - <i>Maximum Coupling Loss</i>) dita o quão atenuado o sinal pode ser pelo ar e por paredes antes de a comunicação cair. 
+                É a diferença entre o que você transmite e o mínimo que você consegue escutar:
+
+                $$MCL = P_{TX} - S$$
+            </p>
+            <div class="serial-monitor" style="border-top: 25px solid #1f2d3d;">
+                <p>> Calculando Sensibilidade para SF12, BW = 125 kHz</p>
+                <p>> S = -174 + 10*log10(125000) + 6 + (-20)</p>
+                <p>> S = -174 + 51 + 6 - 20</p>
+                <p>> S = -137 dBm (Sensibilidade extrema)</p>
+                <br>
+                <p>> Calculando Maximum Link Budget (P_TX = 14 dBm)</p>
+                <p>> MCL = 14 dBm - (-137 dBm)</p>
+                <p>> MCL = 151 dB</p>
+            </div>
+            <p>
+                Um Link Budget de 151dB é colossal. Redes de celular tradicionais ou Wi-Fi costumam operar com orgamentos de link na casa de 100dB a 110dB. É essa sobra de mais de 40dB (a escala logarítmica de 40dB representa uma diferença de \(10^4\), ou seja, 10.000 vezes mais tolerância à perda de potência)
+                que permite ao sinal LoRa atravessar dezenas de quilômetros de ar, folhas de árvores, paredes de concreto e até subsolos.
+            </p>
+
+            <h4>Relação com a Distância (<i>Path Loss</i>)</h4>
+            <p>
+                Se quisermos estimar a distância teórica máxima (\(d\), em km) num cenário de linha de visada (sem obstáculos), usamos o modelo de Perda no Espaço Livre (FSPL - <i>Free Space Path Loss</i>):
+                
+                $$FSPL (dB) = 20\log_{10}(d) + 20\log_{10}(f) + 32.44$$
+
+                Onde \(f\) é a frequência central em MHz (por exemplo, <strong>915MHz</strong> no Brasil). Quando o FSPL se iguala ao Link Budget máximo do sistema, alcançamos o limite físico da distância da rede. Obviamente, em cenários urbanos reais, usa-se modelos mais complexos 
+                (como <i>Okumura-Hata</i> ou <i>Cost231</i>) para descontar as perdas severas de reflexão e difração nos prédios.
+            </p>
         </section>
 
         <section id="enlace">
