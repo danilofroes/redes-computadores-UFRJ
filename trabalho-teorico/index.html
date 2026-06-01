@@ -239,8 +239,8 @@
 
         h3 {
             color: var(--text-light);
-            margin: 25px 0 10px 0;
-            font-size: 1.2rem;
+            margin: 10px 0 10px 0;
+            font-size: 1.5rem;
             display: flex;
             align-items: center;
         }
@@ -252,7 +252,29 @@
             font-size: 0.9rem;
         }
 
-        p { margin-bottom: 15px; }
+        h4 {
+            font-family: var(--font-tech);
+            color: var(--text-main);
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin: 20px 0 10px 0;
+            letter-spacing: 1.5px;
+            display: flex;
+            align-items: center;
+        }
+
+        h4::before {
+            content: '>';
+            color: var(--led-tx);
+            margin-right: 8px;
+            font-size: 1rem;
+            font-weight: bold;
+        }
+
+        p { 
+            margin-bottom: 15px; 
+            text-align: justify;
+        }
 
         a {
             color: var(--text-light);
@@ -267,9 +289,44 @@
             border-radius: 2px;
         }
 
-        ul { margin-left: 20px; margin-bottom: 20px; list-style-type: square; }
-        li { margin-bottom: 8px; }
-        li strong { color: var(--copper-trace); }
+        ul { 
+            margin-left: 20px; 
+            margin-bottom: 20px; 
+            list-style-type: square; 
+        }
+
+        li { 
+            margin-bottom: 8px; 
+            text-align: justify;
+        }
+
+        li strong { 
+            color: var(--copper-trace); 
+        }
+
+        img {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            margin-bottom: 15px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: var(--text-main);
+            color: var(--pcb-dark);
+            font-size: 1.2em;
+            text-align: center;
+        }
 
         /* BLOCO DE CÓDIGO TIPO TERMINAL SERIAL */
         .serial-monitor {
@@ -293,6 +350,101 @@
             color: #8892b0;
             font-size: 0.75rem;
             font-family: sans-serif;
+        }
+
+        /* ESTILOS DO SIMULADOR RF */
+        .simulator-box {
+            background-color: #0b151e;
+            border: 1px solid #1f2d3d;
+            border-radius: 6px;
+            padding: 20px;
+            margin: 30px 0;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.8);
+        }
+
+        .sim-controls {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .sim-control-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sim-control-group label {
+            font-size: 0.85rem;
+            color: var(--copper-trace);
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .sim-control-group select, 
+        .sim-control-group input {
+            background-color: #050a0f;
+            color: var(--text-light);
+            border: 1px solid #1f2d3d;
+            padding: 8px;
+            font-family: var(--font-tech);
+            border-radius: 4px;
+            outline: none;
+        }
+
+        .sim-control-group select:focus, 
+        .sim-control-group input:focus {
+            border-color: var(--led-rx);
+        }
+
+        .sim-metrics {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            background-color: #050a0f;
+            padding: 15px;
+            border-left: 3px solid var(--led-rx);
+            border-radius: 4px;
+            margin-bottom: 20px;
+        }
+
+        .metric {
+            text-align: center;
+            flex: 1;
+            min-width: 120px;
+            margin: 5px;
+        }
+
+        .metric-value {
+            display: block;
+            font-size: 1.5rem;
+            color: var(--led-rx);
+            font-weight: bold;
+            font-family: var(--font-display);
+        }
+
+        .metric-label {
+            font-size: 0.75rem;
+            color: var(--text-main);
+            text-transform: uppercase;
+        }
+
+        .canvas-container {
+            width: 100%;
+            background-color: #050a0f;
+            border: 1px solid #1f2d3d;
+            border-radius: 4px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .canvas-label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-size: 0.75rem;
+            color: #8892b0;
+            z-index: 10;
         }
 
         /* RESPONSIVIDADE */
@@ -321,6 +473,8 @@
             }
         }
     </style>
+
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
 
@@ -416,8 +570,347 @@
             <h2><span class="section-num">0x02</span>Modulação LoRa (Camada Física)</h2>
 
             <h3>Chirp Spread Spectrum (CSS)</h3>
+            <p>
+                Para entendermos de fato o LoRa, precisamos descer ao nível do sinal eletromagnético. O protocolo utiliza uma técnica de espalhamento espectral proprietária baseada em <i>Chirp Spread Spectrum</i> (CSS).
+            </p>
+            <p>
+                Nesse quesito, ele se difere de modulações tradicionais, como o FSK (<i>Frequency Shift Keying</i>) ou QAM (<i>Quadrature Amplitude Modulation</i>), já que historicamente, o CSS foi desenvolvido
+                para aplicações militares e de radares na década de 1940, pois ele possuí uma altíssima resiliência a interferências e ruídos. A empresa <i>Semtech</i> adaptou essa tecnologia para criar o LoRa, focando em 
+                comunicações de longo alcance, baixo custo e baixo consumo.
+            </p>
+
+            <h4>Anatomia do Sinal</h4>
+            <p>
+                Primeiramente, vamos entender como o LoRa divide e empacota a informação. No LoRa, os bits de dados brutos não são transmitidos individualmente. Eles são agrupados em símbolos. 
+                O tamanho desse agrupamento e a velocidade da transmissão dependem de parâmetros fundamentais:
+            </p>
+            <ul>
+                <li>
+                    <strong>Largura de Banda (BW - <i>Bandwidth</i>):</strong> É a faixa de frequência (em Hz) na qual o sinal irá varrer.
+                </li>
+                <li>
+                    <strong>Fator de Espalhamento (SF - <i>Spreading Factor</i>):</strong> Define quantos bits de informação cabem em um único símbolo. Um SF de 7, por exemplo, significa que um símbolo carrega
+                    7 bits (\(2^7 = 128\)).
+                </li>
+                <li>
+                    <strong>Duração do Símbolo (\(T_s\)):</strong> O tempo que leva para transmitir um símbolo completo. Ele é diretamente proporcional ao SF e inversamente proporcional à BW.
+                </li>
+            </ul>
+            <p>
+                A relação matemática entre esses parâmetros que define a duração do símbolo é dada por:
+                $$T_s = \frac{2^{SF}}{BW}$$
+            </p>
+
+            <h4>Chirps</h4>
+            <p>
+                A palavra chirp remete ao "pio" de um passarinho. Na física e na engenharia, um chirp é um sinal cuja frequência aumenta ou diminui continuamente ao longo do tempo. No caso do LoRa, lidamos 
+                estritamente com variações lineares de frequência.
+            </p>
+            <p>
+                Matematicamente, a frequência instantânea \(f(t)\) de um chirp linear puro pode ser descrita pela equação:
+                $$f(t) = f_0 + \mu t$$
+                Onde:
+            </p>
+            <ul>
+                <li>\(f_0\) é a frequência inicial</li>
+                <li>\(\mu\) é a taxa de variação da frequência (<i>chirp rate</i>), calculada pela razão entre a largura de banda (\(BW\)) e a duração do símbolo (\(T_s\)), ou seja, \(\mu = \frac{BW}{T_s}\).</li>
+            </ul>
+            <p>
+                Para termos a visão completa do sinal que realmente viaja pelo ar, precisamos olhar para o <strong>domínio do tempo</strong>. A fase instantânea \(\phi(t)\) do sinal é a integral da frequência, o que
+                nos leva a uma equação quadrática para a fase:
+
+                $$\phi(t) = 2\pi \left( f_0 t + \frac{\mu}{2} t^2 \right) + \phi_0$$
+
+                Consequentemente, a equação final da onda de tensão \(s(t)\) gerada pelo rádio LoRa é uma senoide com frequência variável:
+
+                $$s(t) = A \cos\left(2\pi f_0 t + \pi \mu t^2 + \phi_0\right)$$
+
+                <i>(Onde \(A\) é a amplitude do sinal e \(\phi_0\) é a fase inicial)</i>
+            </p>
+
+            <h4>Tipos de Chirps e Modulação de Dados</h4>
+            <p>
+                Existem três tipos principais de chirps no LoRa:
+            </p>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tipo de Chirp</th>
+                        <th>Comportamento da Frequência</th>
+                        <th>Função no LoRa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Up-chirp</td>
+                        <td>A frequência varre linearmente do limite inferior para o limite superior da largura de banda.</td>
+                        <td>Usado no preâmbulo para sincronização do receptor.</td>
+                    </tr>
+                    <tr>
+                        <td>Down-chirp</td>
+                        <td>A frequência varre do limite superior para o inferior.</td>
+                        <td>Sinaliza o fim do preâmbulo e sincroniza a temporização.</td>
+                    </tr>
+                    <tr>
+                        <td>Data Chirp</td>
+                        <td>Um up-chirp que sofre um salto cíclico de frequência no meio do símbolo.</td>
+                        <td>Codificar e transmitir a informação útil (payload).</td>
+                    </tr>
+                </tbody>
+            </table>
+            <img src="images/css_frequency.jpg" width="100%">
+            <p>
+                Sobre a codificação da informação, no LoRa, a informação bruta (os bits) não é transmitida diretamente. Os bits são agrupados e mapeados em <strong>símbolos</strong>.
+                O valor do símbolo determina o momento exato (o atraso temporal ou deslocamento cíclico) em que a rampa de frequência de um up-chirp sofre uma "quebra" e retorna à frequência base antes de continuar subindo.
+            </p>
+            <p>
+                Esse deslocamento no tempo/frequência é o que o receptor vai analisar para demodular o sinal e recuperar a informação digital. Na imagem abaixo, temos um exemplo de sinal contendo
+                a sequência de bits 11 01 10 00:
+            </p>
+            <img src="images/decode_css.png">
+
+            <h4>Por que o CSS?</h4>
+            <p>
+                A escolha do CSS no LoRa para IoT não foi acidental, ele resolve os principais problemas de comunicação a longas distâncias com baixa potência:
+            </p>
+            <ul>
+                <li>
+                    <strong>Resiliência ao Ruído Branco (AWGN):</strong> Como a energia do sinal é "espalhada" por uma banda de frequência muito maior do que a necessária para transmitir a
+                    informação bruta, o LoRa consegue ser demodulado mesmo quando o sinal está abaixo do piso de ruído (<i>Noise Floor</i>). O receptor consegue correlacionar os chirps recebidos
+                    e "puxar" o sinal de dentro do ruído.
+                </li>
+                <li>
+                    <strong>Imunidade ao Efeito Doppler:</strong> Em modulações puramente baseadas em frequência fixa, o deslocamento <i>Doppler</i> (causado pelo movimento do transmissor ou receptor)
+                    gera grandes erros. No CSS, um deslocamento <i>Doppler</i> apenas muda ligeiramente o chirp no eixo do tempo. O receptor sincronizado percebe isso como um pequeno erro de sincronismo,
+                    mas a variação linear da frequência permanece intacta, preservando a informação.
+                </li>
+                <li>
+                    <strong>Resistência ao Desvanecimento por Múltiplos Caminhos (<i>Multipath Fading</i>):</strong> Em ambientes urbanos (onde o sinal bate em prédios e chega em tempos diferentes), os ecos
+                    do sinal sofrem interferência construtiva e destrutiva. Como o chirp varre uma banda larga continuamente, o desvanecimento geralmente afeta apenas uma pequena fração do símbolo, permitindo
+                    que o receptor recupere o restante sem perda de dados. 
+                </li>
+            </ul>
 
             <h3>Parâmetros de Rádio-Frequência</h3>
+            <p>
+                Na modulação LoRa, a transmissão do sinal no espectro de radiofrequência é governada por três parâmetros principais configuráveis via firmware no transceptor: o
+                <strong>Spreading Factor (SF), Bandwidth (BW) e o Coding Rate (CR)</strong>. Como vimos a cima, tanto o SF, quanto o BW fazem parte da anatomia do sinal e o CR entra como uma taxa de codificação.
+                Compreender a relação matemática entre eles é fundamental para otimizar o <i>Link Budget</i> e a capacidade de uma rede LoRaWAN.
+            </p>
+
+            <h4>Spreading Factor (SF) - Fator de espalhamento</h4>
+            <p>
+                O SF definirá o número de "chirps" que compõem um único símbolo LoRa. Em termos digitais, ele representa o logaritmo na base 2 do número de chirps por símbolo:
+                $$\text{Número de Chirps por Símbolo} = 2^SF$$
+            </p>
+            <p>
+                No LoRa comercial, o SF varia tipicamente de SF7 a SF12.
+            </p>
+            <img src="images/sf_chirps.png">
+            <ul>
+                <li>
+                    <strong>SF Baixo (ex.: SF7):</strong> O símbolo é mais curto no tempo, o que resulta em uma maior taxa de bits e menor tempo de transmissão (<i>Time-on-Air</i>), econoizando bateria.
+                    Contudo, a robustez contra ruído é menor e possui menos chirps por símbolo.
+                </li>
+                <li>
+                    <strong>SF Alto (ex.: SF12):</strong> O símbolo se estende no tempo, isso aumenta o ganho de processamento (<i>Processing Gain</i>) do receptor, permitindo decodificar sinais com uma relação sinal-ruído (SNR)
+                    extremamente desfavorável (até -20dB, ou seja, o sinal está 100 vezes abaixo do piso de ruído). O custo disso é uma taxa de dados drasticamente reduzida e maior consumo de energia.
+                </li>
+            </ul>
+            <img src="images/sf_tipos.png" width="70%">
+            <p>
+                Uma propriedade matemática crucial dos chirps LoRa é que sinais transmitidos na mesma frequência central, mas com SFs diferentes, são ortogonais (ou quase ortogonais). Isso significa que um gateway
+                pode receber múltiplos pacotes simultaneamente no mesmo canal físico, desde que eles usem SFs distintos, criando "canais virtuais".
+            </p>
+
+            <h4>Bandwidth (BW) - Largura de Banda</h4>
+            <p>
+                A largura de banda representa a extensão física de frequências (em Hz) que o chirp linear varre ao longo do tempo. Os valores padrão estabelecidos pela LoRa Alliance para redes sub-GHz são 125kHz, 250kHz e 500kHz.
+            </p>
+            <p>
+                A velocidade na qual os chirps são transmitidos (Chip Rate, \(R_c\)) é diretamente igual à largura de banda:
+                $$R_c = BW \quad [\text{chirps/s}]$$
+            </p>
+            <p>
+                Aumentar a largura de banda permite que o chirp suba ou desça a rampa de frequência de forma muito mais íngreme, reduzindo o tempo do símbolo. No entando, de acordo com a física das comunicações, uma banda mais larga
+                deixa entrar mais potência de ruído térmico no receptor (\(P_n = -174 + 10\log_{10}(BW) + NF\) dBm). Portanto, duplicar a BW (ex.: de 125kHz para 250kHz) reduz a sensibilidade do receptor em 3dB.
+            </p>
+            <img src="images/bw_compare.png">
+
+            <h4>Coding Rate (CR) - Taxa de Codificação</h4>
+            <p>
+                O LoRa utiliza codificação de canal para correção direta de erros (<i>Forward Error Correction - FEC</i>) para proteger a transmissão contra rajadas de interferência (<i>interference bursts</i>).
+                O transceptor adiciona bits de paridade aos bits de dados estruturados em blocos de 4 bits.
+            </p>
+            <p>
+                O CR é expresso na forma:
+                $$CR = \frac{4}{4+n}$$
+                Onde \(n \in {1, 2, 3, 4}\), correspondendo às configurações de firmware de 4/5 a 4/8.
+            </p>
+            <ul>
+                <li>
+                    <strong>CR 4/5 (\(n = 1\)):</strong> Overhead mínimo de 25%. Menor proteção, maior taxa líquida de dados.
+                </li>
+                <li>
+                    <strong>CR 4/8 (\(n = 4\)):</strong> Overhead de 100& (o tamanho dos dados dobra). Máxima proteção contra interferências cíclicas ou impulsivas.
+                </li>
+            </ul>
+
+            <h4>Formulação Matemática Unificada</h4>
+            <p>
+                Aqui estão algumas equações preditivas para o comportamento da camada física:
+            </p>
+            <p>
+                <strong>Duração do Símbolo (\(T_s\)):</strong> <br>
+                Como um símbolo contém \(2^SF\) chirps e a taxa de chirps é \(BW\), o tempo necessário para transmitir um único símbolo é:
+                $$T_s = \frac{2^SF}{BW} \quad [\text{segundos}]$$
+            </p>
+            <p>
+                <strong>Taxa de Bits Nominal (\(R_b\)):</strong> <br>
+                Cada símbolo carrega exatamente \(SF\) bits de informação bruta. Multiplicando a taxa de símbolos pela eficiência do código de correção de erros (CR), 
+                obtemos a taxa líquida de transmissão de dados:
+                $$R_b = SF \cdot \frac{1}{T_s} \cdot \text{CR} = SF \cdot \frac{BW}{2^{SF}} \cdot \left(\frac{4}{4+n}\right) \quad [\text{bits/s}]$$
+                Com essa equação, vemos que a taxa de bits diminui exponencialmente com o aumento do SF, mas aumenta linearmente com o aumento da largura de banda (\(BW\)).
+            </p>
+            <p>
+                É possível analisar os chirps gerados pelos diferentes parâmetros com o simulador abaixo:
+            </p>
+            <div class="simulator-box">
+                <h4 style="margin-top: 0;">Simulador de Modulação CSS</h4>
+                <p style="font-size: 0.9rem;">Ajuste os parâmetros físicos para observar o impacto no símbolo e na taxa de transmissão.</p>
+                
+                <div class="sim-controls">
+                    <div class="sim-control-group">
+                        <label for="sim-sf">Spreading Factor (SF)</label>
+                        <select id="sim-sf">
+                            <option value="7">SF7 (Mais rápido)</option>
+                            <option value="8">SF8</option>
+                            <option value="9">SF9</option>
+                            <option value="10">SF10</option>
+                            <option value="11">SF11</option>
+                            <option value="12">SF12 (Maior alcance)</option>
+                        </select>
+                    </div>
+                    <div class="sim-control-group">
+                        <label for="sim-bw">Bandwidth (BW)</label>
+                        <select id="sim-bw">
+                            <option value="125">125 kHz</option>
+                            <option value="250">250 kHz</option>
+                            <option value="500">500 kHz</option>
+                        </select>
+                    </div>
+                    <div class="sim-control-group">
+                        <label for="sim-cr">Coding Rate (CR)</label>
+                        <select id="sim-cr">
+                            <option value="1">4/5</option>
+                            <option value="2">4/6</option>
+                            <option value="3">4/7</option>
+                            <option value="4">4/8</option>
+                        </select>
+                    </div>
+                    <div class="sim-control-group">
+                        <label for="sim-pl">Payload (Bytes)</label>
+                        <input type="number" id="sim-pl" value="20" min="1" max="255">
+                    </div>
+                </div>
+
+                <div class="sim-metrics">
+                    <div class="metric">
+                        <span class="metric-value" id="val-ts">0.00</span>
+                        <span class="metric-label">Duração do Símbolo (ms)</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-value" id="val-rb">0</span>
+                        <span class="metric-label">Taxa de Bits (bps)</span>
+                    </div>
+                    <div class="metric">
+                        <span class="metric-value" id="val-toa">0.00</span>
+                        <span class="metric-label">Time-on-Air Aprox. (ms)</span>
+                    </div>
+                </div>
+
+                <div class="canvas-container">
+                    <span class="canvas-label">Eixo Y: Frequência | Eixo X: Tempo</span>
+                    <canvas id="chirpCanvas" width="800" height="200" style="width: 100%; height: auto; display: block;"></canvas>
+                </div>
+            </div>
+
+            <script>
+                function updateSimulator() {
+                    const sf = parseInt(document.getElementById('sim-sf').value);
+                    const bw_khz = parseInt(document.getElementById('sim-bw').value);
+                    const bw = bw_khz * 1000; 
+                    const cr = parseInt(document.getElementById('sim-cr').value);
+                    const payload = parseInt(document.getElementById('sim-pl').value) || 0;
+
+                    // Cálculos Matemáticos Físicos
+                    const ts_sec = Math.pow(2, sf) / bw;
+                    const ts_ms = ts_sec * 1000;
+                    
+                    const rb = sf * (bw / Math.pow(2, sf)) * (4 / (4 + cr));
+
+                    // Aproximação teórica de Time-on-Air (Preamble + Payload simplificado)
+                    const tPreamble = (8 + 4.25) * ts_sec;
+                    const tPayload = (payload * 8) / rb;
+                    const toa_ms = (tPreamble + tPayload) * 1000;
+
+                    document.getElementById('val-ts').innerText = ts_ms.toFixed(2);
+                    document.getElementById('val-rb').innerText = rb.toFixed(0);
+                    document.getElementById('val-toa').innerText = toa_ms.toFixed(0);
+
+                    drawChirps(sf, bw_khz);
+                }
+
+                function drawChirps(sf, bw_khz) {
+                    const canvas = document.getElementById('chirpCanvas');
+                    const ctx = canvas.getContext('2d');
+                    const w = canvas.width;
+                    const h = canvas.height;
+
+                    ctx.clearRect(0, 0, w, h);
+
+                    ctx.strokeStyle = '#1f2d3d';
+                    ctx.lineWidth = 1;
+                    for(let i=0; i<w; i+=40) { ctx.beginPath(); ctx.moveTo(i,0); ctx.lineTo(i,h); ctx.stroke(); }
+                    for(let i=0; i<h; i+=40) { ctx.beginPath(); ctx.moveTo(0,i); ctx.lineTo(w,i); ctx.stroke(); }
+
+                    ctx.strokeStyle = '#00ffcc';
+                    ctx.lineWidth = 2;
+
+                    const maxBw = 500;
+                    // Amplitude Y varia com a BW
+                    const ySpread = (bw_khz / maxBw) * (h - 40); 
+                    const yStart = (h / 2) + (ySpread / 2); // Frequência mínima
+                    const yEnd = (h / 2) - (ySpread / 2);   // Frequência máxima
+
+                    // Uma base abstrata para visualização: SF7 é rápido (curto no X), SF12 é lento (longo no X)
+                    const chirpWidth = 25 * Math.pow(1.35, sf - 7);
+
+                    let x = 20;
+                    ctx.beginPath();
+                    while (x < w + chirpWidth) {
+                        ctx.moveTo(x, yStart);
+                        ctx.lineTo(x + chirpWidth, yEnd);
+                        
+                        // Retorno instantâneo (Flyback) para o próximo símbolo
+                        ctx.moveTo(x + chirpWidth, yEnd);
+                        ctx.lineTo(x + chirpWidth, yStart);
+                        
+                        x += chirpWidth;
+                    }
+                    ctx.stroke();
+                }
+
+                // Listeners para os inputs
+                document.getElementById('sim-sf').addEventListener('change', updateSimulator);
+                document.getElementById('sim-bw').addEventListener('change', updateSimulator);
+                document.getElementById('sim-cr').addEventListener('change', updateSimulator);
+                document.getElementById('sim-pl').addEventListener('input', updateSimulator);
+
+                // Chama uma vez para inicializar
+                window.addEventListener('load', updateSimulator);
+            </script>
+
 
             <h3>Link Budget</h3>
         </section>
