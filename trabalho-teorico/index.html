@@ -276,6 +276,10 @@
             text-align: justify;
         }
 
+        p strong {
+            color: var(--copper-trace);
+        }
+
         a {
             color: var(--text-light);
             transition: color 0.2s;
@@ -310,7 +314,7 @@
             margin-right: auto;
             margin-bottom: 15px;
         }
-
+/* 
         table {
             width: 100%;
             border-collapse: collapse;
@@ -326,7 +330,7 @@
             color: var(--pcb-dark);
             font-size: 1.2em;
             text-align: center;
-        }
+        } */
 
         /* BLOCO DE CÓDIGO TIPO TERMINAL SERIAL */
         .serial-monitor {
@@ -447,6 +451,39 @@
             z-index: 10;
         }
 
+        /* TABELA TIPO DATASHEET */
+        .tech-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background-color: #050a0f;
+            font-size: 0.9rem;
+            border: 1px solid #1f2d3d;
+        }
+
+        .tech-table th, .tech-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #1a2c3f;
+        }
+
+        .tech-table th {
+            background-color: #0b151e;
+            color: var(--copper-trace);
+            font-family: var(--font-display);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        .tech-table tr:hover {
+            background-color: rgba(0, 255, 204, 0.05);
+        }
+
+        .tech-table td:first-child {
+            color: var(--led-rx);
+            font-weight: bold;
+        }
+
         /* RESPONSIVIDADE */
         @media (max-width: 768px) {
             nav ul {
@@ -490,11 +527,11 @@
 
     <nav>
         <ul>
-            <li><a href="#intro" class="active">01. Intro</a></li>
-            <li><a href="#fisica">02. Físico</a></li>
-            <li><a href="#enlace">03. Enlace/Rede</a></li>
+            <li><a href="#intro" class="active">01. Introdução</a></li>
+            <li><a href="#fisica">02. LoRa</a></li>
+            <li><a href="#enlace">03. LoRaWAN</a></li>
             <li><a href="#seguranca">04. Segurança</a></li>
-            <li><a href="#comparativa">05. Análise</a></li>
+            <li><a href="#comparativa">05. Comparação</a></li>
             <li><a href="#pratica">06. Prática</a></li>
             <li><a href="#conclusao">07. Fim</a></li>
         </ul>
@@ -563,6 +600,7 @@
                 <li><strong>LoRa (Modulação Física):</strong> É uma tecnologia de rádio patenteada pela empresa <i>Semtech</i>. Fica na camada física da rede e usa uma técnica chamada <i>Chirp Spread Spectrum</i> (CSS), que modula as ondas de rádio de uma forma que elas conseguem viajar quilômetros de distância e ser captadas mesmo com muito ruído ao redor. O LoRa irá definir como a onda viaja pelo ar.</li>
                 <li><strong>LoRaWAN (Protocolo de Rede):</strong> É o software, o protocolo de comunicação (camada MAC) gerenciado pela <i>LoRa Alliance</i> (associação aberta sem fins lucrativos). Ele define como os dispositivos conversam com a rede: de que forma os dados são empacotados, como a criptografia funciona, e quando um dispositivo pode transmitir ou deve dormir para poupar bateria.</li>
             </ul>
+            <img src="images/lora_lorawan_compare.png" width="100%">
         </section>
 
         <section id="fisica">
@@ -632,7 +670,7 @@
             <p>
                 Existem três tipos principais de chirps no LoRa:
             </p>
-            <table>
+            <table class="tech-table">
                 <thead>
                     <tr>
                         <th>Tipo de Chirp</th>
@@ -997,8 +1035,168 @@
             <h2><span class="section-num">0x03</span>Protocolo LoRaWAN</h2>
 
             <h3>Arquitetura</h3>
+            <p>
+                Como vimos lá no início, o LoRa é o meio físico de transmissão e detalhamos bem ele no tópico anteior, agora vamos falar do LoRaWAN, que é o cérebro que gerencia essa comunicação.
+                Ele opera primariamente como um protocolo de controle de acesso ao meio (MAC) e define a arquitetura da rede do início ao fim.
+            </p>
+            <p>
+                A topologia de rede do LoRaWAN é a <strong>Estrela-de-Estrelas</strong> (<i>Star-of-Stars</i>). Em IoT, a topologia mais comum de se encontrar é a rede em malha (<i>Mesh</i>), como temos no Zigbee.
+                Em redes Mesh, os próprios sensores repassam as mensagens uns dos outros até chegarem ao destino, o que consome muita bateria dos nós intermediários. Na topologia estrela do LoRaWAN, os nós finais não
+                fazem roteamento, eles apenas transmitem para a base, economizando o máximo de energia possível.
+            </p>
+            <img src="images/lorawan_arq.jpg" width="100%">
+            <p>
+                É possível observar na imagem que a arquitetura é dividida em quatro componentes fundamentais:
+            </p>
+            <h4>End-Nodes (Dispositivos/Nós Finais)</h4>
+            <p>
+                São os sensores ou atuadores (nós da rede) espalhados em campo. Eles contêm o microcontrolador e o transceptor de rádio LoRa. A comunicação deles com a rede é baseada no modelo <strong>ALOHA</strong> puro,
+                quando um sensor tem um dado para enviar, ele simplesmente acorda, transmite no canal de rádio e volta a dormir.
+            </p>
+            <p>
+                Um diferencial importante no LoRaWAN, é que um <i>End-Node</i> não se associa (pareia) a um <i>Gateway</i> específico, como acontece no Wi-Fi ou Bluetooth. O dispositivo simplesmente "grita" sua mensagem no ar,
+                assim, qualquer <i>Gateway</i> ao alcalce irá "ouvir".
+            </p>
+
+            <h4>Gateways (Concentradores)</h4>
+            <p>
+                Os Gateways são as pontes de transição de protocolo. Eles possuem transceptores LoRa multicanais (capazes de ouvir múltiplos Spreading Factors e frequências simultaneamente) e uma interface de rede tradicional
+                (Ethernet, Wi-Fi ou 3G/4G/5G).
+            </p>
+            <p>
+                O papel do Gateway de fato é ser estritamente um <strong>retransmissor transparente</strong> (um <i>packet forwarder</i>). Ele não processa criptografia, não valida o pacote e não decide nada. Ele apenas encapsula o 
+                pacote LoRa recebido (RF) em um pacote UDP/TCP (IP) e o envia para o servidor central.
+            </p>
+
+            <h4>Network Server (O Cérebro da Rede)</h4>
+            <p>
+                O Servidor de Rede (NS) é o núcleo inteligente da arquitetura LoRaWAN (ex.: The Things Network - TTN, ChirpStack). Como um End-Device não está preso a nenhum Gateway, uma única mensagem transmitida por um sensor pode
+                ser captada por três Gateways diferentes na mesma cidade, os três enviarão essa mesma mensagem via internet para o Network Server.
+            </p>
+            <p>
+                As principais funções do NS incluem:
+            </p>
+            <ul>
+                <li>
+                    <strong>Deduplicação de pacotes:</strong> Ele percebe que recebeu três cópias da mesma mensagem, descarta duas e mantém a que chegou com melhor qualidade de sinal (RSSI/SNR).
+                </li>
+                <li>
+                    <strong>Roteamento:</strong> Envia o pacote limpo para a aplicação correta.
+                </li>
+                <li>
+                    <strong>Autenticação:</strong> Verifica a integridade da mensagem (MIC - <i>Message Integrity Code</i>).
+                </li>
+                <li>
+                    <strong>Controle MAC (ADR):</strong> O NS monitora a qualidade do link de cada nó e envia comandos de controle para o nó otimizar sua bateria, ajustando dinamicamente o Spreading Factor e a 
+                    potência de transmissão (ADR - <i>Adaptive Data Rate</i>).
+                </li>
+            </ul>
+
+            <h4>Application Server (Servidor de Aplicação)</h4>
+            <p>
+                É o destiono final do dado, enquanto o <i>Network Server</i> lida com a manutenção do canal de comunicação e infraestrutura, o <i>Application Server</i> lida com o negócio.
+            </p>
+            <p>
+                É aqui que o <i>payload</i> (os dados úteis do sensor, como "25ºC e 40% de umidade") é finalmente descriptografado, processado, armazenado em um banco de dados e apresentado em um
+                dashboard para o usuário final.
+            </p>
+
+            <h4>Exemplo de deduplicação no NS</h4>
+            <div class="serial-monitor" style="border-top: 25px solid #1f2d3d;">
+                <p style="color: #8892b0;">[NETWORK SERVER LOG - Rx Packet]</p>
+                <p>> Pacote recebido de Node_ID: 0xABCD1234</p>
+                <p>> Gateway 1 (Centro): RSSI -95 dBm, SNR 12 dB [CÓPIA 1]</p>
+                <p>> Gateway 2 (Norte): RSSI -110 dBm, SNR -2 dB [CÓPIA 2]</p>
+                <p>> Gateway 3 (Leste): RSSI -118 dBm, SNR -10 dB [CÓPIA 3]</p>
+                <p style="color: #ff3366;">> Ação: Descartando cópias 2 e 3 (Baixo SNR/RSSI).</p>
+                <p style="color: #00ffcc;">> Ação: Autenticando cópia 1 (MIC OK).</p>
+                <p>> Encaminhando payload para Application Server...</p>
+            </div>
 
             <h3>Classes de Dispositivos</h3>
+            <p>
+                O projeto de um dispositivo LoRaWAN exige que seja decidido o compromisso exato entre consumo de energia e a latência de recepção (<i>downlink</i>). Para padronizar essa relação, a LoRa
+                Alliance dividiu a operação de dispositivos em três classes. Todos os dispositivos LoRaWAN devem, obrigatoriamente, implementar a Classe A, podendo mudar para as Classes B ou C depedendo dos comandos
+                do servidor ou de sua configuração de firmware.
+            </p>
+
+            <h4>Classe A (Suportada por todos os dispositivos)</h4>
+            <p>
+                A Classe A (de <i>All</i>) é a mais eficiente em termos de energia e a configuração padrão de qualquer nó LoRaWAN. O seu funcionamento dita que a comunicação é <strong>sempre iniciada pelo dispositivo (uplink)</strong>. 
+                O servidor nunca consegue "acordar" um dispositivo Classe A por conta própria.
+            </p>
+            <p>
+                Após transmitir um dado (TX), o rádio do dispositivo abre duas curtas janelas de recepção (RX1 e RX2) em momentos estritamente pré-definidos (geralmente 1 e 2 segundos após o fim da transmissão).
+                Se o servidor de aplicação tiver algum comando para enviar ao nó (como "abra a válvula" ou "mude o Spreading Factor"), o <i>Network Server</i> enfileira essa mensagem e espera o nó transmitir algo.
+                Quando o nó transmite, o servidor aproveita a janela RX1 e RX2 para enviar a resposta de volta. 
+            </p>
+            <p>
+                Após a janela RX2, o dispositivo volta a dormir profundamente (modo <i>sleep</i> de poucos microamperes de consumo) até a próxima transmissão programada.
+            </p>
+
+            <h4>Classe B (Beacon/Sincronizada)</h4>
+            <p>
+                A Classe B estabelece um meio-termo. Ela é usada quando a aplicação precisa enviar comandos para o nó com uma latência conhecida, sem esperar que o nó decida transmitir um uplink.
+            </p>
+            <ul>
+                <li>
+                    <strong>Sincronização no Tempo:</strong> Para que o nó saiba exatamente quando acordar para ouvir o servidor, a rede precisa estar sincronizada. 
+                    Os Gateways transmitem periodicamente um pacote especial chamado <strong>Beacon</strong> (sinalizador de tempo).
+                </li>
+                <li>
+                    <strong>Ping Slots:</strong> O dispositivo Classe B acorda periodicamente, escuta o Beacon para alinhar seu relógio interno e, em seguida, abre janelas de recepção programadas 
+                    (<i>Ping Slots</i>) em intervalos negociados com a rede. Se o servidor quiser enviar um comando, ele envia no exato momento do próximo <i>Ping Slot</i>. O consumo de bateria é moderado.
+                </li>
+            </ul>
+
+            <h4>Classe C (Contínua)</h4>
+            <p>
+                A Classe C tem o rádio em modo de recepção (RX) contínuo. A janela só se fecha quando o próprio dispositivo precisa transmitir (TX).
+            </p>
+            <ul>
+                <li>
+                    <strong>Baixíssima Latência:</strong> O servidor pode enviar comandos para o dispositivo a qualquer momento, e ele receberá imediatamente.
+                </li>
+                <li>
+                    <strong>Alto Consumo:</strong> Como o transceptor de RF fica constantemente energizado ouvindo o canal, o consumo de energia é altíssimo para os padrões IoT (dezenas de miliamperes continuamente). 
+                    Dispositivos Classe C não costumam operar com baterias, sendo alimentados diretamente pela rede elétrica.
+                </li>
+            </ul>
+
+            <img src="images/class_devices.png" width="100%">
+
+            <h4>Resumo Comparativo das Classes</h4>
+
+            <table class="tech-table">
+                <thead>
+                    <tr>
+                        <th>Classe</th>
+                        <th>Modo de RX</th>
+                        <th>Latência Downlink</th>
+                        <th>Consumo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Classe A</td>
+                        <td>Pós-transmissão (RX1, RX2)</td>
+                        <td>Alta (Espera próximo TX)</td>
+                        <td>Mínimo (Anos na bateria)</td>
+                    </tr>
+                    <tr>
+                        <td>Classe B</td>
+                        <td>Agendada (Ping Slots)</td>
+                        <td>Previsível / Negociada</td>
+                        <td>Moderado</td>
+                    </tr>
+                    <tr>
+                        <td>Classe C</td>
+                        <td>Contínuo</td>
+                        <td>Mínima (Imediata)</td>
+                        <td>Máximo (Requer alimentação externa)</td>
+                    </tr>
+                </tbody>
+            </table>
         </section>
 
         <section id="seguranca">
