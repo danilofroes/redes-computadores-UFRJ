@@ -1202,8 +1202,77 @@
         <section id="seguranca">
             <div class="trace-detail"></div>
             <h2><span class="section-num">0x04</span>Segurança</h2>
+            <p>
+                Em IoT, a segurança é uma área crítica e o LoRaWAN leva isso muito a sério, já que os sinais viajam quilômetros pelo ar (um meio totalmente público e suscetível a interceptações), o protocolo garante
+                confidencialidade, autenticidade e integridade através de criptografia forte.
+            </p>
 
             <h3>Criptografia Ponta-a-Ponta</h3>
+            <p>
+                A segurança no LoRaWAN é baseada no padrão industrial de criptografia simétrica <strong>AES-128</strong> (<i>Advanced Encryption Standard</i> com chaves de 128 bits). No entanto, o verdadeiro diferencial da arquitetura 
+                LoRaWAN é a separação de responsabilidades, garantindo uma criptografia que atua em duas camadas distintas simultaneamente: a <b>camada de rede (MAC)</b> e a <b>camada de aplicação</b>.
+            </p>
+            <p>
+                Em muitas redes sem fio convencionais, a criptografia ocorre apenas no salto do ar (<i>hop-by-hop</i>), ou seja, do dispositivo até o roteador/gateway. O gateway então descriptografa a mensagem e a lê em texto claro.
+            </p>
+            <p>
+                No LoRaWAN, a arquitetura garante criptografia ponta-a-ponta verdadeira (end-to-end) do payload. O <i>End-Device</i> criptografa os dados úteis do sensor antes de enviá-los, e esses dados permanecem criptografados ao passar pelo Gateway
+                e até mesmo ao passar pelo <i>Network Server</i>. Somente o <strong>Application Server</strong> (sob controle absoluto do dono da aplicação) possui a chave correta para abrir o pacote.
+            </p>
+            <p>
+                Isso faz com que, mesmo que você utilize um <i>Network Server</i> público ou de terceiros (como a The Things Network ou servidores de operadoras de telecomunicação), eles não conseguem ler o que seus sensores estão medindo.
+                Eles apenas gerenciam o tráfeco da rede, preservando a total privacidade dos dados.
+            </p>
+
+            <h4>Modos de Operação do AES no LoRaWAN</h4>
+            <p>
+                O AES é apenas uma cifra do bloco, a forma como aplicamos essa cifra aos dados (o "Modo de Operação") muda completamente o seu propósito. O LoRaWAN utiliza o AES-128 de duas formas matemáticas diferentes para atingir dois objetivos distintos:
+            </p>
+            <p>
+                <b>1. Confidencialidade do Payload (AES-CTR)</b> <br>
+                Para criptografar os dados de aplicação (o <i>FRMPayload</i>), o LoRaWAN utiliza o AES-128 no modo CTR (Counter Mode).
+                Neste modo, o algoritmo não criptografa os dados diretamente. Em vez disso, a chave de sessão em conjunto com contadores de quadros (Frame Counters) geram um fluxo pseudoaleatório de bytes (<i>keystream</i>). Esse <i>keystream</i> é então
+                somado aos dados em texto claro através de uma operações lógica XOR (ou exclusivo), bit a bit.
+            </p>
+            <p>
+                Seja \(P\) o dado em texto claro (Plaintext), a cifra \(C\) gerada será:
+                
+                $$C = P \oplus \text{AES128\_Keystream}$$
+
+                A grande vantagem do modo CTR para microcontroladores simples é que a operação de descriptografia é matematicamente idêntica à de criptografia (basta aplicar o XOR novamente com o mesmo <i>keystream</i> para recuperar o dado), 
+                o que otimiza muito o uso de memória (Flash/RAM) no nó final.
+            </p>
+            
+            <img src="images/counter_mode_cryp.png" width="100%">
+
+            <p>
+                <b>2. Integridade e Autenticidade (AES-CMAC)</b> <br>
+                Garantir que ninguém leia a mensagem (confidencialidade) não impede que um atacante capture a mensagem de rádio e a reenvie depois (Ataque de Repetição ou <i>Replay Attack</i>), ou modifique seus bits aleatoriamente no ar.
+            </p>
+            <p>
+                Para evitar isso, o LoRaWAN adiciona um código de integridade ao final de toda mensagem, chamado <strong>MIC (Message Integrity Code)</strong>. O MIC é calculado rodando o pacote inteiro em um algoritmo de hash baseado em cifra, 
+                o AES-CMAC (Cipher-based Message Authentication Code).
+
+                $$\text{MIC} = \text{AES128_CMAC}(\text{Chave_de_Rede}, \text{Mensagem_Completa})[0..3]$$
+
+                O resultado é truncado para os primeiros 4 bytes e anexado ao fim do pacote LoRa. Quando o <i>Network Server</i> recebe o pacote, ele recalcula o AES-CMAC. Se o MIC gerado por ele não bater perfeitamente com os 4 bytes recebidos, 
+                o pacote é imediatamente descartado como fraude ou corrupção.
+            </p>
+
+            <div class="serial-monitor" style="border-top: 25px solid #1f2d3d;">
+                <p style="color: #8892b0; margin-bottom: 10px;">> ESTRUTURA DO PACOTE LORAWAN E CAMADAS DE CRIPTOGRAFIA</p>
+                
+                <div style="display: flex; text-align: center; font-size: 0.85rem; border: 1px solid #1f2d3d; border-radius: 4px; overflow: hidden; margin-bottom: 15px;">
+                    <div style="background-color: #2a3f54; padding: 10px; flex: 1;">MHDR<br><span style="font-size: 0.7rem;">(MAC Header)</span></div>
+                    <div style="background-color: #1a2c3f; padding: 10px; flex: 2;">FHDR<br><span style="font-size: 0.7rem;">(Endereços e Contadores)</span></div>
+                    <div style="background-color: #2a3f54; padding: 10px; flex: 1;">FPort<br><span style="font-size: 0.7rem;">(Porta)</span></div>
+                    <div style="background-color: rgba(255, 51, 102, 0.2); border: 1px solid var(--led-tx); padding: 10px; flex: 3; color: var(--led-tx);">FRMPayload<br><span style="font-size: 0.7rem;">(Criptografado AES-CTR)</span></div>
+                    <div style="background-color: rgba(0, 255, 204, 0.2); border: 1px solid var(--led-rx); padding: 10px; flex: 1.5; color: var(--led-rx);">MIC<br><span style="font-size: 0.7rem;">(Assinatura AES-CMAC)</span></div>
+                </div>
+
+                <p style="color: var(--led-tx);">[ ! ] FRMPayload (Vermelho): Apenas o Application Server consegue ler.</p>
+                <p style="color: var(--led-rx);">[ ! ] MIC (Ciano): O Network Server valida para garantir integridade e rejeitar ataques.</p>
+            </div>
 
             <h3>Chaves de Sessão</h3>
 
