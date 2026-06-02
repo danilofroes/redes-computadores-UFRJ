@@ -1275,6 +1275,99 @@
             </div>
 
             <h3>Chaves de Sessão</h3>
+            <p>
+                Para que a criptografia ponta-a-ponta funcione de forma segura, o LoRaWAN utiliza um sistema hierárquico de chaves baseadas em AES-128. O coração dessa arquitetura (considerando a especificação base LoRaWAN 1.0.x, mais comum no mercado) 
+                reside em uma chave raiz e duas chaves de sessão derivadas.
+            </p>
+
+            <h4>Chave Raiz: AppKey (Application Key)</h4>
+            <p>
+                A <code>AppKey</code> é a "chave-mestra" do dispositivo. É uma chave AES de 128 bits gerada pelo fabricante ou pelo engenheiro de software no momento da gravação do firmware.
+            </p>
+            <p>
+                A <code>AppKey</code> <strong>nunca</strong> é transmitida pelo ar. Ela fica gravada de forma segura na memória do microcontrolador (ou em um elemento seguro de hardware) e cadastrada previamente no servidor de autenticação (Join Server). 
+                A sua única função é servir de semente para derivar as chaves de sessão.
+            </p>
+
+            <h4>Chaves de Sessão (Session Keys)</h4>
+            <p>
+                Quando o dispositivo se conecta à rede (um processo que veremos a seguir), a <code>AppKey</code> é submetida a uma função criptográfica junto com alguns números aleatórios da rede para gerar duas chaves temporárias.
+                O dispositivo as manterá ativas até ser reiniciado ou forçado a renegociar uma nova sessão.
+            </p>
+            <ul>
+                <li>
+                    <strong>NwkSKey (Network Session Key):</strong> É a chave entregue ao <strong>Network Server</strong>. Ela é usada exclusivamente para calcular e validar o MIC (<i>Message Integrity Code</i>) usando o AES-CMAC. É com essa chave que a rede garante
+                    que o pacote não foi forjado ou alterado por um hacker. Além disso, ela é usada para criptografar comandos puramente de rede (comandos MAC), como requisições para mudar o <i>Spreading Factor</i> no nó (ADR). O Network Server não pode usar essa chave
+                    para descriptografar os dados do sensor.
+                </li>
+                <li>
+                    <strong>AppSKey (Application Session Key):</strong> É a chave entregue ao <strong>Application Server</strong>. Ela é usada exclusivamente para criptografia e descriptografia do <i>payload</i> da aplicação
+                    (os dados do sensor) usando o modo AES-CTR. O Network Server não tem essa chave.
+                </li>
+            </ul>
+
+            <img src="images/session_keys_diag.png" width="100%">
+
+            <h4>Matemática da Derivação de Chaves</h4>
+            <p>
+                Bom, vamos entender como isso é calculado no microcontrolador. As chaves de sessão são geradas submetendo blocos de dados específicos a uma operação de criptografia (AES-128 no modo ECB) usando a <code>AppKey</code> como chave cifradora.
+            </p>
+            <p>
+                A derivação segue as equações formais de especificação LoRaWAN:
+
+                $$NwkSKey = aes128\_encrypt(AppKey, 0x01 \,|\, JoinNonce \,|\, NetID \,|\, DevNonce \,|\, pad_{16})$$
+
+                $$AppSKey = aes128\_encrypt(AppKey, 0x02 \,|\, JoinNonce \,|\, NetID \,|\, DevNonce \,|\, pad_{16})$$
+
+                Onde o operador $|$ denota concatenação, e os parâmetros são:
+            </p>
+            <ul>
+                <li>
+                    <strong><code>0x01</code> e <code>0x02</code>:</strong> Prefixos constantes que garantem que as chaves geradas sejam completamente diferentes.
+                </li>
+                <li>
+                    <strong><code>JoinNonce</code>:</strong> Um número pseudoaleatório fornecido pelo Servidor de Rede.
+                </li>
+                <li>
+                    <strong><code>NetID</code>:</strong> Identificador único da rede (ex.: ID da The Things Network).
+                </li>
+                <li>
+                    <strong><code>DevNonce</code>:</strong> Um número gerado pelo próprio dispositivo (End-Device) para evitar ataques de repetição.
+                </li>
+                <li>
+                    <strong>\(pad_{16}\):</strong> Zeros adicionados para completar o bloco de 16 bytes do AES.
+                </li>
+            </ul>
+            
+            <div style="background-color: #0b151e; padding: 20px; border-radius: 8px; border: 1px dashed var(--copper-trace); margin: 30px 0; display: flex; flex-direction: column; gap: 15px; align-items: center;">
+                
+                <div style="text-align: center;">
+                    <span style="font-size: 0.8rem; color: var(--text-main); text-transform: uppercase;">Gravação em Fábrica (Firmware)</span>
+                    <div style="background-color: #1a2c3f; border: 2px solid var(--copper-trace); padding: 10px 30px; border-radius: 4px; color: var(--copper-trace); font-weight: bold; font-family: var(--font-display);">
+                        AppKey (128-bit Root)
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 50px; width: 100%; justify-content: center; position: relative;">
+                    <div style="position: absolute; top: -15px; left: 50%; width: 2px; height: 15px; background-color: var(--copper-trace);"></div>
+                    
+                    <div style="text-align: center;">
+                        <span style="font-size: 0.8rem; color: var(--text-main); text-transform: uppercase;">0x01 + Nonces</span>
+                        <div style="background-color: rgba(0, 255, 204, 0.1); border: 1px solid var(--led-rx); padding: 10px 20px; border-radius: 4px; color: var(--led-rx);">
+                            NwkSKey
+                        </div>
+                        <span style="font-size: 0.75rem; color: #8892b0; display: block; margin-top: 5px;">Vai para o Network Server<br>(Assinatura MIC)</span>
+                    </div>
+
+                    <div style="text-align: center;">
+                        <span style="font-size: 0.8rem; color: var(--text-main); text-transform: uppercase;">0x02 + Nonces</span>
+                        <div style="background-color: rgba(255, 51, 102, 0.1); border: 1px solid var(--led-tx); padding: 10px 20px; border-radius: 4px; color: var(--led-tx);">
+                            AppSKey
+                        </div>
+                        <span style="font-size: 0.75rem; color: #8892b0; display: block; margin-top: 5px;">Vai para o App Server<br>(Criptografia do Payload)</span>
+                    </div>
+                </div>
+            </div>
 
             <h3>OTAA e ABP</h3>
         </section>
