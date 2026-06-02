@@ -557,16 +557,30 @@
             padding: 0 15px;
         }
 
+        nav {
+            width: 100%;
+        }
+
         nav ul {
+            width: 100%;
             flex-wrap: nowrap;
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
-            padding-bottom: 5px;
             justify-content: flex-start;
-            margin: 0 10px;
+            padding: 10px 20px;
+            margin: 0; 
+            gap: 10px;
             scrollbar-width: none; /* Firefox */
         }
         nav ul::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+
+        nav ul li {
+            flex-shrink: 0;
+        }
+
+        nav ul li a {
+            white-space: nowrap;
+        }
 
         main {
             margin: 20px auto;
