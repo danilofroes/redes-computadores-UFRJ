@@ -640,14 +640,13 @@
             <ul>
                 <li>
                     <strong>LoRa (Modulação Física):</strong> É uma tecnologia de rádio patenteada pela empresa <i>Semtech</i>. Fica na camada física da rede e usa uma técnica chamada <i>Chirp Spread Spectrum</i> (CSS), que modula as ondas de rádio de uma forma que elas conseguem viajar quilômetros de distância e 
-                    ser captadas mesmo com muito ruído ao redor. O LoRa irá definir como a onda viaja pelo ar.
-                </li>
+                    ser captadas mesmo com muito ruído ao redor. O LoRa irá definir como a onda viaja pelo ar.</li>
                 <li>
                     <strong>LoRaWAN (Protocolo de Rede):</strong> É o software, o protocolo de comunicação (camada MAC) gerenciado pela <i>LoRa Alliance</i> (associação aberta sem fins lucrativos). Ele define como os dispositivos conversam com a rede: de que forma os dados são empacotados, como a criptografia funciona, 
                     e quando um dispositivo pode transmitir ou deve dormir para poupar bateria.
                 </li>
             </ul>
-            <img src="images/lora_lorawan_compare.png" width="100%">
+            <img src="images/lora_lorawan_compare.png" alt="Diferença de camadas de aplicação entre LoRa e LoRaWAN" style="width: 100%;">
         </section>
 
         <section id="fisica">
@@ -743,7 +742,7 @@
                     </tr>
                 </tbody>
             </table>
-            <img src="images/css_frequency.jpg" width="100%">
+            <img src="images/css_frequency.jpg" alt="Frequência em função do tempo e formação de chirps por símbolo" style="width: 100%;">
             <p>
                 Sobre a codificação da informação, no LoRa, a informação bruta (os bits) não é transmitida diretamente. Os bits são agrupados e mapeados em <strong>símbolos</strong>.
                 O valor do símbolo determina o momento exato (o atraso temporal ou deslocamento cíclico) em que a rampa de frequência de um up-chirp sofre uma "quebra" e retorna à frequência base antes de continuar subindo.
@@ -752,7 +751,7 @@
                 Esse deslocamento no tempo/frequência é o que o receptor vai analisar para demodular o sinal e recuperar a informação digital. Na imagem abaixo, temos um exemplo de sinal contendo
                 a sequência de bits 11 01 10 00:
             </p>
-            <img src="images/decode_css.png">
+            <img src="images/decode_css.png" alt="Binários em chirps" style="width: 100%;">
 
             <h4>Por que o CSS?</h4>
             <p>
@@ -791,10 +790,10 @@
             <p>
                 No LoRa comercial, o SF varia tipicamente de SF7 a SF12.
             </p>
-            <img src="images/sf_chirps.png">
+            <img src="images/sf_chirps.png" alt="Diferença doS chirps para caad Spreading Factor" style="width: 70%;">
             <ul>
                 <li>
-                    <strong>SF Baixo (ex.: SF7):</strong> O símbolo é mais curto no tempo, o que resulta em uma maior taxa de bits e menor tempo de transmissão (<i>Time-on-Air</i>), econoizando bateria.
+                    <strong>SF Baixo (ex.: SF7):</strong> O símbolo é mais curto no tempo, o que resulta em uma maior taxa de bits e menor tempo de transmissão (<i>Time-on-Air</i>), economizando bateria.
                     Contudo, a robustez contra ruído é menor e possui menos chirps por símbolo.
                 </li>
                 <li>
@@ -802,7 +801,7 @@
                     extremamente desfavorável (até -20dB, ou seja, o sinal está 100 vezes abaixo do piso de ruído). O custo disso é uma taxa de dados drasticamente reduzida e maior consumo de energia.
                 </li>
             </ul>
-            <img src="images/sf_tipos.png" width="70%">
+            <img src="images/sf_tipos.png" alt="Tabela comparativa de spreading factor" style="width: 70%;">
             <p>
                 Uma propriedade matemática crucial dos chirps LoRa é que sinais transmitidos na mesma frequência central, mas com SFs diferentes, são ortogonais (ou quase ortogonais). Isso significa que um gateway
                 pode receber múltiplos pacotes simultaneamente no mesmo canal físico, desde que eles usem SFs distintos, criando "canais virtuais".
@@ -820,7 +819,7 @@
                 Aumentar a largura de banda permite que o chirp suba ou desça a rampa de frequência de forma muito mais íngreme, reduzindo o tempo do símbolo. No entando, de acordo com a física das comunicações, uma banda mais larga
                 deixa entrar mais potência de ruído térmico no receptor (\(P_n = -174 + 10\log_{10}(BW) + NF\) dBm). Portanto, duplicar a BW (ex.: de 125kHz para 250kHz) reduz a sensibilidade do receptor em 3dB.
             </p>
-            <img src="images/bw_compare.png">
+            <img src="images/bw_compare.png" alt="Comparação de largura de banda" style="width: 100%;">
 
             <h4>Coding Rate (CR) - Taxa de Codificação</h4>
             <p>
@@ -1042,7 +1041,7 @@
                     abaixo do piso de ruído. Para SF12, o \(SNR_{lim}\) chega a -20dB.
                 </li>
             </ul>
-            <img src="images/atena_propag.jpg" width="100%">
+            <img src="images/atena_propag.jpg" alt="Como a antena se propaga até a outra" style="width: 100%;">
 
             <h4>Maximum Link Budget</h4>
             <p>
@@ -1091,7 +1090,7 @@
                 Em redes Mesh, os próprios sensores repassam as mensagens uns dos outros até chegarem ao destino, o que consome muita bateria dos nós intermediários. Na topologia estrela do LoRaWAN, os nós finais não
                 fazem roteamento, eles apenas transmitem para a base, economizando o máximo de energia possível.
             </p>
-            <img src="images/lorawan_arq.jpg" width="100%">
+            <img src="images/lorawan_arq.jpg" alt="Diagrama de funcionamento do LoRaWAN" style="width: 100%;">
             <p>
                 É possível observar na imagem que a arquitetura é dividida em quatro componentes fundamentais:
             </p>
@@ -1102,7 +1101,7 @@
             </p>
             <p>
                 Um diferencial importante no LoRaWAN, é que um <i>End-Node</i> não se associa (pareia) a um <i>Gateway</i> específico, como acontece no Wi-Fi ou Bluetooth. O dispositivo simplesmente "grita" sua mensagem no ar,
-                assim, qualquer <i>Gateway</i> ao alcalce irá "ouvir".
+                assim, qualquer <i>Gateway</i> ao alcance irá "ouvir".
             </p>
 
             <h4>Gateways (Concentradores)</h4>
@@ -1141,7 +1140,7 @@
 
             <h4>Application Server (Servidor de Aplicação)</h4>
             <p>
-                É o destiono final do dado, enquanto o <i>Network Server</i> lida com a manutenção do canal de comunicação e infraestrutura, o <i>Application Server</i> lida com o negócio.
+                É o destino final do dado, enquanto o <i>Network Server</i> lida com a manutenção do canal de comunicação e infraestrutura, o <i>Application Server</i> lida com o negócio.
             </p>
             <p>
                 É aqui que o <i>payload</i> (os dados úteis do sensor, como "25ºC e 40% de umidade") é finalmente descriptografado, processado, armazenado em um banco de dados e apresentado em um
@@ -1210,7 +1209,7 @@
                 </li>
             </ul>
 
-            <img src="images/class_devices.png" width="100%">
+            <img src="images/class_devices.png" alt="Funcionamento de cada classe do LoRaWAN" style="width: 100%;">
 
             <h4>Resumo Comparativo das Classes</h4>
 
@@ -1290,7 +1289,7 @@
                 o que otimiza muito o uso de memória (Flash/RAM) no nó final.
             </p>
             
-            <img src="images/counter_mode_cryp.png" width="100%">
+            <img src="images/counter_mode_cryp.png" alt="Criptografia CTR" style="width: 100%;">
 
             <p>
                 <b>2. Integridade e Autenticidade (AES-CMAC)</b> <br>
@@ -1353,7 +1352,7 @@
                 </li>
             </ul>
 
-            <img src="images/session_keys_diag.png" width="100%">
+            <img src="images/session_keys_diag.png" alt="Diagrama de onde as chaves chegam no LoRaWAN" style="width: 100%;">
 
             <h4>Matemática da Derivação de Chaves</h4>
             <p>
@@ -1461,7 +1460,7 @@
                 </li>
             </ul>
 
-            <img src="images/otaa_lorawan.png" width="100%">
+            <img src="images/otaa_lorawan.png" alt="Funcionamento do OTAA" style="width: 100%;">
 
             <p>
                 As vantagens do handshake é a segurança extrema, se o dispositivo reiniciar, o handshake ocorre novamente e novas chaves de sessão são geradas. Além disso, se a empresa trocar de provedor de rede no futuro, 
@@ -1480,7 +1479,7 @@
                 Sua principal vantagem é que o dispositivo não precisa gastar bateria e tempo fazendo o handshake de conexão (não há Join delay). É excelente para prototipagem rápida em laboratório.
             </p>
             <p>
-                Entretando, possui desvantagens críticas de segurança, pois como as chaves nunca mudam, se o dispositivo for fisicamente comprometido e as chaves extraídas da memória, o invasor terá acesso perpétuo. Além disso, as redes 
+                Entretanto, possui desvantagens críticas de segurança, pois como as chaves nunca mudam, se o dispositivo for fisicamente comprometido e as chaves extraídas da memória, o invasor terá acesso perpétuo. Além disso, as redes 
                 usam Contadores de Quadros (Frame Counters) para evitar ataques de repetição. Se um dispositivo ABP perder a energia (pilha acabar) e reiniciar, seu contador zera. O servidor da rede verá um pacote com o contador "0", 
                 achará que é um ataque de repetição (pois já tinha recebido até o pacote "500" antes do nó desligar) e começará a ignorar o sensor silenciosamente.
             </p>
@@ -1496,7 +1495,7 @@
                 conectar dispositivos a longas distâncias com baixo consumo de energia.
             </p>
 
-            <img src="images/comp_lpwans.png" width="80%">
+            <img src="images/comp_lpwans.png" alt="Comparação entre LPWANs" style="width: 80%;">
 
             <p>
                 Podemos dividi-los pelo tipo de espectro que utilizam: <strong>Espectro Não Licenciado</strong> (Sigfox e LoRaWAN, operando nas bandas ISM, como 915 MHz no Brasil) e 
@@ -1539,7 +1538,7 @@
             </p>
             <ul>
                 <li>
-                    <strong>Flexibilidade de Implatação:</strong> A principal vantagem do LoRaWAN é não depender de operadoras. Um engenheiro pode comprar um Gateway LoRaWAN e desenvolver seu projeto com uma rede privada, sem mensalidades.
+                    <strong>Flexibilidade de Implantação:</strong> A principal vantagem do LoRaWAN é não depender de operadoras. Um engenheiro pode comprar um Gateway LoRaWAN e desenvolver seu projeto com uma rede privada, sem mensalidades.
                 </li>
                 <li>
                     <strong>Capacidade:</strong> O payload chega a 242 bytes e as taxas de dados variam de 250 bps a 50 kbps. É mais do que suficiente para telemetria avançada, superando o limite severo de 12 bytes do Sigfox, mas consumindo muito menos bateria que o protocolo pesado e sincronizado do NB-IoT.
@@ -1592,7 +1591,7 @@
                     </tbody>
                 </table>
             </div>
-
+                
             <h3>LoRaWAN vs Redes Locais</h3>
             <p>
                 Quando comparamos o LoRaWAN com as redes locais (como Wi-Fi, Bluetooth Low Energy e Zigbee), não estamos olhando para tecnologias concorrentes diretas, mas sim para ferramentas 
@@ -1603,7 +1602,7 @@
                 ditam que você só pode escolher dois.
             </p>
 
-            <img src="images/triangle_iot.png" width="50%">
+            <img src="images/triangle_iot.png" alt="Triângulo da conectividade IoT" style="width: 50%;">
 
             <h4>Wi-Fi (WLAN - IEEE 802.11)</h4>
             <p>
