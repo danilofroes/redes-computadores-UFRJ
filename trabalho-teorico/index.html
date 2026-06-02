@@ -1369,7 +1369,74 @@
                 </div>
             </div>
 
-            <h3>OTAA e ABP</h3>
+            <h3>Métodos de Ativação (OTAA e ABP)</h3>
+            <p>
+                Todo dispositivo LoRaWAN precisa de um endereço lógico na rede (<code>DevAddr</code>, similar a um endereço IP em redes locais) e das chaves de sessão (NwkSKey e AppSKey) para começar a transmitir dados válidos.
+                A grande diferença entre OTAA e ABP é a forma como essas credenciais são atribuídas.
+            </p>
+
+            <h4>OTAA (Over-The-Air-Activation)</h4>
+            <p>
+                O OTAA é o método padrão, mais seguro e fortemente recomendado pela LoRa Alliance para qualquer implantação comercial. Nele, as chaves de sessão são negociadas dinamicamente através de um <i>handshake</i> (aperto de mãos) 
+                de rádio, de forma semelhante à negociação de um túnel TLS ou associação WPA2 no Wi-Fi.
+            </p>
+            <p>
+                No OTAA, o microcontrolador sai de fábrica gravado apenas com três identificadores globais fixos (semelhantes a endereços MAC):
+            </p>
+            <ul>
+                <li>
+                    <strong>DevEUI:</strong> Identificador único global do dispositivo (64 bits).
+                </li>
+                <li>
+                    <strong>JoinEUI (ou AppEUI):</strong> Identificador do servidor de aplicação/rede ao qual o nó deve se conectar.
+                </li>
+                <li>
+                    <strong>AppKey:</strong> A chave raiz criptográfica (AES-128) que vimos na subseção anterior.
+                </li>
+            </ul>
+            <p>
+                <b>Como funciona o Handshake:</b>
+            </p>
+            <ul>
+                <li>
+                    <strong>Join-Request:</strong> O dispositivo liga e transmite uma mensagem pública de requisição de entrada. Essa mensagem contém o DevEUI, o JoinEUI e um DevNonce (um número aleatório). 
+                    Ela não é criptografada, mas é <strong>assinada</strong> digitalmente usando a AppKey (MIC).
+                </li>
+                <li>
+                    <strong>Validação:</strong> O Servidor de Rede recebe o pedido, verifica a assinatura MIC e confere se aquele DevEUI tem permissão para entrar na rede.
+                </li>
+                <li>
+                    <strong>Join-Accept:</strong> Se aprovado, o servidor gera um endereço de rede (DevAddr) e envia uma mensagem de aceitação de volta para o nó. O genial aqui é que esta mensagem de aceitação é 
+                    criptografada usando a AppKey. Como apenas o seu sensor e o servidor possuem essa chave, um hacker interceptando o ar não entende a resposta.
+                </li>
+                <li>
+                    <strong>Derivação Dinâmica:</strong> O nó recebe o Join-Accept, o descriptografa, e ambos (nó e servidor) usam os números aleatórios trocados (Nonces) para calcular as chaves NwkSKey e AppSKey.
+                </li>
+            </ul>
+
+            <img src="images/otaa_lorawan.png" width="100%">
+
+            <p>
+                As vantagens do handshake é a segurança extrema, se o dispositivo reiniciar, o handshake ocorre novamente e novas chaves de sessão são geradas. Além disso, se a empresa trocar de provedor de rede no futuro, 
+                basta apontar os nós para o novo servidor e eles farão um novo OTAA, sem precisar ir a campo regravar o firmware.
+            </p>
+
+            <h4>ABP (Activation By Personalization)</h4>
+            <p>
+                O ABP é o método estático e direto. Não existe handshake, não existe Join-Request e nem derivação de chaves. As chaves de sessão (NwkSKey e AppSKey) e o endereço de rede (DevAddr) são inseridos <strong>diretamente 
+                no código-fonte (firmware)</strong> do microcontrolador pelo desenvolvedor antes do dispositivo ser instalado.
+            </p>
+            <p>
+                Quando o dispositivo é ligado, ele não pede permissão; ele simplesmente começa a transmitir os dados dos sensores imediatamente, assumindo que a rede já o conhece.
+            </p>
+            <p>
+                Sua principal vantagem é que o dispositivo não precisa gastar bateria e tempo fazendo o handshake de conexão (não há Join delay). É excelente para prototipagem rápida em laboratório.
+            </p>
+            <p>
+                Entretando, possui desvantagens críticas de segurança, pois como as chaves nunca mudam, se o dispositivo for fisicamente comprometido e as chaves extraídas da memória, o invasor terá acesso perpétuo. Além disso, as redes 
+                usam Contadores de Quadros (Frame Counters) para evitar ataques de repetição. Se um dispositivo ABP perder a energia (pilha acabar) e reiniciar, seu contador zera. O servidor da rede verá um pacote com o contador "0", 
+                achará que é um ataque de repetição (pois já tinha recebido até o pacote "500" antes do nó desligar) e começará a ignorar o sensor silenciosamente.
+            </p>
         </section>
 
         <section id="comparativa">
