@@ -547,63 +547,73 @@
 
         /* Responsividade */
         @media (max-width: 768px) {
-        header h1 {
-            font-size: 2.2rem;
-        }
 
-        header p {
-            font-size: 0.85rem;
-            letter-spacing: 1.5px;
-            padding: 0 15px;
-        }
+            html {
+                font-size: 14px;
+            }
 
-        nav {
-            width: 100%;
-        }
+            body, p, li {
+                font-size: 0.95rem;
+                line-height: 1.5;
+            }
+            
+            header h1 {
+                font-size: 2.2rem;
+            }
 
-        nav ul {
-            width: 100%;
-            flex-wrap: nowrap;
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-            justify-content: flex-start;
-            padding: 10px 20px;
-            margin: 0; 
-            gap: 10px;
-            scrollbar-width: none; /* Firefox */
-        }
-        nav ul::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+            header p {
+                font-size: 0.85rem;
+                letter-spacing: 1.5px;
+                padding: 0 15px;
+            }
 
-        nav ul li {
-            flex-shrink: 0;
-        }
+            nav {
+                width: 100%;
+            }
 
-        nav ul li a {
-            white-space: nowrap;
-        }
+            nav ul {
+                width: 100%;
+                flex-wrap: nowrap;
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                justify-content: flex-start;
+                padding: 10px 20px;
+                margin: 0; 
+                gap: 10px;
+                scrollbar-width: none; /* Firefox */
+            }
+            nav ul::-webkit-scrollbar { display: none; } /* Chrome/Safari */
 
-        main {
-            margin: 20px auto;
-            padding: 0 10px;
-        }
+            nav ul li {
+                flex-shrink: 0;
+            }
 
-        section {
-            padding: 25px 15px;
-        }
+            nav ul li a {
+                white-space: nowrap;
+            }
 
-        section::before,
-        section::after {
-            display: none;
-        }
+            main {
+                margin: 20px auto;
+                padding: 0 10px;
+            }
 
-        .trace-detail {
-            display: none;
-        }
+            section {
+                padding: 25px 15px;
+            }
 
-        .metric {
-            min-width: 100px;
+            section::before,
+            section::after {
+                display: none;
+            }
+
+            .trace-detail {
+                display: none;
+            }
+
+            .metric {
+                min-width: 100px;
+            }
         }
-    }
     </style>
 
     <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
