@@ -37,7 +37,6 @@
             background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M54.627 0l.83.83v58.34l-.83.83H5.373l-.83-.83V.83l.83-.83h49.254zM53 2H7v56h46V2zM15 15h30v30H15V15zm2 2v26h26V17H17z' fill='%23132230' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");
         }
 
-        /* HEADER */
         header {
             position: relative;
             height: 60vh;
@@ -98,7 +97,6 @@
             letter-spacing: 3px;
         }
 
-        /* NAVEGAÇÃO */
         nav {
             position: sticky;
             top: 0;
@@ -162,14 +160,13 @@
             transition: width 0.1s linear;
         }
 
-        /* CONTEÚDO PRINCIPAL */
         main {
             max-width: 1000px;
             margin: 40px auto;
             padding: 0 20px;
         }
 
-        /* MÓDULOS */
+        /* Módulos */
         section {
             background-color: var(--pcb-board);
             margin-bottom: 50px;
@@ -199,7 +196,7 @@
         section::before { left: -3px; }
         section::after  { right: -3px; }
 
-        /* Detalhe de Trilha de Cobre no canto */
+        /* Detalhe de trilha no canto */
         .trace-detail {
             position: absolute;
             top: 0;
@@ -314,29 +311,12 @@
             margin-right: auto;
             margin-bottom: 15px;
         }
-/* 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 15px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: var(--text-main);
-            color: var(--pcb-dark);
-            font-size: 1.2em;
-            text-align: center;
-        } */
 
-        /* BLOCO DE CÓDIGO TIPO TERMINAL SERIAL */
+        /* Bloco de código estilo serial monitor */
         .serial-monitor {
             background-color: #050a0f;
             border: 1px solid #1f2d3d;
-            border-top: 25px solid #1f2d3d; /* Barra superior do terminal */
+            border-top: 25px solid #1f2d3d;
             border-radius: 6px;
             padding: 20px;
             position: relative;
@@ -356,7 +336,7 @@
             font-family: sans-serif;
         }
 
-        /* ESTILOS DO SIMULADOR RF */
+        /* Simulador RF */
         .simulator-box {
             background-color: #0b151e;
             border: 1px solid #1f2d3d;
@@ -451,7 +431,7 @@
             z-index: 10;
         }
 
-        /* TABELA TIPO DATASHEET */
+        /* Estilo de tabela */
         .tech-table {
             width: 100%;
             border-collapse: collapse;
@@ -484,7 +464,67 @@
             font-weight: bold;
         }
 
-        /* RESPONSIVIDADE */
+        /* Estilo do quiz */
+        .quiz-container {
+            margin-top: 30px;
+        }
+
+        .quiz-item {
+            background-color: #050a0f;
+            border: 1px solid #1f2d3d;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            overflow: hidden;
+            transition: border-color 0.3s;
+        }
+
+        .quiz-item:hover {
+            border-color: var(--led-rx);
+        }
+
+        .quiz-item summary {
+            padding: 15px 20px;
+            font-family: var(--font-tech);
+            color: var(--text-light);
+            font-weight: bold;
+            cursor: pointer;
+            outline: none;
+            user-select: none;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .quiz-item summary::-webkit-details-marker {
+            display: none;
+        }
+        
+        .quiz-item summary::after {
+            content: '[ + CHIP INFO ]';
+            color: var(--copper-trace);
+            font-size: 0.8rem;
+            font-family: var(--font-tech);
+        }
+
+        .quiz-item[open] summary::after {
+            content: '[ - CLOSE LOG ]';
+            color: var(--led-tx);
+        }
+
+        .quiz-item .quiz-answer {
+            padding: 20px;
+            border-top: 1px solid #1a2c3f;
+            background-color: rgba(11, 21, 30, 0.5);
+            color: var(--text-main);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .quiz-answer strong {
+            color: var(--led-rx);
+        }
+
+        /* Responsividade */
         @media (max-width: 768px) {
             nav ul {
                 flex-wrap: nowrap;
@@ -532,7 +572,8 @@
             <li><a href="#enlace">03. LoRaWAN</a></li>
             <li><a href="#seguranca">04. Segurança</a></li>
             <li><a href="#comparativa">05. Comparação</a></li>
-            <li><a href="#pratica">06. Prática</a></li>
+            <!-- <li><a href="#pratica">06. Prática</a></li> -->
+             <li><a href="#questionario">06. Questionário</a></li>
             <li><a href="#conclusao">07. Referências</a></li>
         </ul>
         <div class="progress-container">
@@ -597,8 +638,14 @@
                 Basicamente, podemos ver o LoRa sendo as cordas vocais e ondas sonoras para emitir sons em uma comunicação humana, já o LoRaWAN seria o idioma e as regras de comunicação que temos para uma conversa fluir.
             </p>
             <ul>
-                <li><strong>LoRa (Modulação Física):</strong> É uma tecnologia de rádio patenteada pela empresa <i>Semtech</i>. Fica na camada física da rede e usa uma técnica chamada <i>Chirp Spread Spectrum</i> (CSS), que modula as ondas de rádio de uma forma que elas conseguem viajar quilômetros de distância e ser captadas mesmo com muito ruído ao redor. O LoRa irá definir como a onda viaja pelo ar.</li>
-                <li><strong>LoRaWAN (Protocolo de Rede):</strong> É o software, o protocolo de comunicação (camada MAC) gerenciado pela <i>LoRa Alliance</i> (associação aberta sem fins lucrativos). Ele define como os dispositivos conversam com a rede: de que forma os dados são empacotados, como a criptografia funciona, e quando um dispositivo pode transmitir ou deve dormir para poupar bateria.</li>
+                <li>
+                    <strong>LoRa (Modulação Física):</strong> É uma tecnologia de rádio patenteada pela empresa <i>Semtech</i>. Fica na camada física da rede e usa uma técnica chamada <i>Chirp Spread Spectrum</i> (CSS), que modula as ondas de rádio de uma forma que elas conseguem viajar quilômetros de distância e 
+                    ser captadas mesmo com muito ruído ao redor. O LoRa irá definir como a onda viaja pelo ar.
+                </li>
+                <li>
+                    <strong>LoRaWAN (Protocolo de Rede):</strong> É o software, o protocolo de comunicação (camada MAC) gerenciado pela <i>LoRa Alliance</i> (associação aberta sem fins lucrativos). Ele define como os dispositivos conversam com a rede: de que forma os dados são empacotados, como a criptografia funciona, 
+                    e quando um dispositivo pode transmitir ou deve dormir para poupar bateria.
+                </li>
             </ul>
             <img src="images/lora_lorawan_compare.png" width="100%">
         </section>
@@ -1650,7 +1697,7 @@
 
         </section>
 
-        <section id="pratica">
+        <!-- <section id="pratica">
             <div class="trace-detail"></div>
             <h2><span class="section-num">0x06</span>Implementação Prática</h2>
 
@@ -1661,6 +1708,70 @@
             <h3>Desenvolvimento do Código</h3>
 
             <h3>Testes da Implementação</h3>
+        </section> -->
+
+        <section id="questionario">
+            <div class="trace-detail"></div>
+            <h2><span class="section-num">0x06</span>Questionário</h2>
+                <div class="quiz-container">
+
+                    <details class="quiz-item">
+                        <summary>01. Qual é a diferença fundamental entre LoRa e LoRaWAN?</summary>
+                        <div class="quiz-answer">
+                            <p>
+                                A diferença está na camada em que operam. O <strong>LoRa</strong> é apenas a tecnologia de modulação física (o rádio), responsável por transformar a informação em ondas eletromagnéticas (Chirps) para viajar longas distâncias pelo ar. 
+                            </p>
+                            <p>
+                                Já o <strong>LoRaWAN</strong> é o software, o protocolo de rede (camada MAC). Ele dita as regras de comunicação: como os pacotes são montados, como a segurança funciona e quando um dispositivo pode transmitir ou deve dormir.
+                            </p>
+                        </div>
+                    </details>
+                    
+                    <details class="quiz-item">
+                        <summary>02. Como o Spreading Factor (SF) influencia a duração do símbolo e a sensibilidade do receptor LoRa?</summary>
+                        <div class="quiz-answer">
+                            <p>
+                                Matematicamente, a duração de um símbolo LoRa é dada por <strong>Ts = (2^SF) / BW</strong>. Quando aumentamos o Spreading Factor (por exemplo, de SF7 para SF12), o número de chips por símbolo cresce exponencialmente. Isso estende o tempo do 
+                                símbolo no ar (Time-on-Air), reduzindo a taxa líquida de transmissão de dados. 
+                            </p>
+                        </div>
+                    </details>
+
+                    <details class="quiz-item">
+                        <summary>03. Quais são os três pilares que definem uma rede LPWAN (como o LoRaWAN)?</summary>
+                        <div class="quiz-answer">
+                            <p>
+                                As redes LPWAN baseiam-se em três características principais: <strong>Longo Alcance</strong> (quilômetros de distância), <strong>Baixo Consumo de Energia</strong> (sensores duram anos com pequenas baterias) e <strong>Baixo Custo</strong> de operação.
+                            </p>
+                            <p>
+                                Para conseguir entregar tudo isso ao mesmo tempo, a tecnologia exige um sacrifício obrigatório: a <strong>baixa taxa de transmissão de dados</strong>. Ou seja, serve para enviar pequenos pacotes de texto (telemetria), mas nunca para áudio ou vídeo.
+                            </p>
+                        </div>
+                    </details>
+
+                    <details class="quiz-item">
+                        <summary>04. Como funciona a separação criptográfica entre o Network Server e o Application Server no LoRaWAN?</summary>
+                        <div class="quiz-answer">
+                            <p>
+                                A segurança baseada em AES-128 emprega duas chaves de sessão distintas geradas dinamicamente: a <strong>NwkSKey</strong> (Network Session Key) e a <strong>AppSKey</strong> (Application Session Key). 
+                            </p>
+                            <p>
+                                A NwkSKey é de posse do Network Server; ela serve para validar a integridade da mensagem através do cálculo do MIC (Message Integrity Code) via AES-CMAC e para decodificar comandos MAC de rede. Já a AppSKey é de posse exclusiva do Application Server 
+                                e criptografa o payload útil (dados do sensor) via AES-CTR. Como o Network Server não possui a AppSKey, ele atua como um encaminhador cego de dados, garantindo a confidencialidade ponta-a-ponta (E2E) da aplicação.
+                            </p>
+                        </div>
+                    </details>
+
+                    <details class="quiz-item">
+                        <summary>05. Um atuador industrial de segurança precisa receber comandos com baixíssima latência. Qual classe LoRaWAN deve ser adotada?</summary>
+                        <div class="quiz-answer">
+                            <p>
+                                Para aplicações que demandam controle em tempo real e comandos de downlink imediatos (baixíssima latência), deve-se adotar a <strong>Classe C (Contínua)</strong>. Diferente da Classe A (que só abre janelas de escuta após realizar um uplink próprio) 
+                                e da Classe B (que abre janelas em instantes programados via beacons síncronos), os dispositivos de Classe C mantêm o rádio em modo de recepção quase 100% do tempo. 
+                            </p>
+                        </div>
+                    </details>
+                </div>
         </section>
 
         <section id="conclusao">
