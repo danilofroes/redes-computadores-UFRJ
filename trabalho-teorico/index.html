@@ -1444,6 +1444,107 @@
             <h2><span class="section-num">0x05</span>Análise Comparativa</h2>
 
             <h3>LoRaWAN vs NB-IoT e Sigfox</h3>
+            <p>
+                O mercado de LPWAN é dominado por três grandes competidores que adotaram abordagens tecnológicas e modelos de negócios completamente diferentes para resolver o mesmo problema: 
+                conectar dispositivos a longas distâncias com baixo consumo de energia.
+            </p>
+
+            <img src="images/comp_lpwans.png" width="80%">
+
+            <p>
+                Podemos dividi-los pelo tipo de espectro que utilizam: <strong>Espectro Não Licenciado</strong> (Sigfox e LoRaWAN, operando nas bandas ISM, como 915 MHz no Brasil) e 
+                <strong>Espectro Licenciado</strong> (NB-IoT, operando nas faixas de frequência compradas pelas operadoras de celular).
+            </p>
+
+            <h4>Sigfox: Abordagem Ultra-Narrowband (UNB)</h4>
+            <p>
+                O Sigfox é uma tecnologia proprietária de origem francesa. Enquanto o LoRa espalha o sinal por uma banda larga (125 kHz) para resistir ao ruído, o Sigfox faz exatamente o oposto: ele 
+                concentra toda a energia da transmissão em uma fatia minúscula do espectro, apenas 100 Hz de largura de banda, usando modulação BPSK (<i>Binary Phase Shift Keying</i>).
+            </p>
+            <ul>
+                <li>
+                    <strong>Vantagens:</strong> O alcance é extremo e o consumo de energia é o menor possível. Como a largura de banda é ínfima, o piso de ruído térmico que entra no receptor é quase nulo, garantindo um Link Budget altíssimo.
+                </li>
+                <li>
+                    <strong>Desvantagens:</strong> A taxa de dados é ridiculamente baixa (cerca de 100 bps). O tamanho máximo do payload de uma mensagem Sigfox é de apenas 12 bytes, e o nó pode enviar no máximo 140 mensagens por dia. Além disso, o Sigfox é um monopólio de rede: você não pode comprar um Gateway Sigfox
+                    e montar sua própria rede local; você é obrigado a pagar uma assinatura para usar as antenas da empresa Sigfox.
+                </li>
+            </ul>
+
+            <h4>NB-IoT (Narrowband IoT): Abordagem Celular (3GPP)</h4>
+            <p>
+                O NB-IoT é o padrão industrial estabelecido pelo 3GPP (o mesmo órgão que define o 4G e o 5G). Ele não usa modulação exótica; ele utiliza o maquinário robusto das redes LTE (OFDMA no <i>downlink</i> e SC-FDMA no <i>uplink</i>), mas reduzido para canais de 180 kHz.
+            </p>
+            <ul>
+                <li>
+                    <strong>Vantagens:</strong> Como opera em espectro licenciado, não sofre interferência de outras tecnologias (como telefones sem fio ou controles de portão). Oferece altíssima qualidade de serviço (QoS), taxas de dados elevadas (até 250 kbps) e payload praticamente ilimitado. 
+                    É a escolha natural para aplicações de missão crítica (como controle de infraestrutura elétrica e hidrômetros em massa).
+                </li>
+                <li>
+                    <strong>Desvantagens:</strong> O consumo de energia é significativamente maior que LoRaWAN e Sigfox. O dispositivo precisa fazer sincronização contínua com a torre da operadora (Claro, Vivo, TIM). Além disso, os módulos de hardware (modems NB-IoT com chip SIM) são mais caros, 
+                    e existe o custo recorrente mensal por linha (SIM Card) com a operadora de telecomunicação.
+                </li>
+            </ul>
+
+            <h4>LoRaWAN: O Ponto de Equilíbrio</h4>
+            <p>
+                O LoRaWAN encontra seu lugar exatamente no meio termo entre o Sigfox e o NB-IoT.
+            </p>
+            <ul>
+                <li>
+                    <strong>Flexibilidade de Implatação:</strong> A principal vantagem do LoRaWAN é não depender de operadoras. Um engenheiro pode comprar um Gateway LoRaWAN e desenvolver seu projeto com uma rede privada, sem mensalidades.
+                </li>
+                <li>
+                    <strong>Capacidade:</strong> O payload chega a 242 bytes e as taxas de dados variam de 250 bps a 50 kbps. É mais do que suficiente para telemetria avançada, superando o limite severo de 12 bytes do Sigfox, mas consumindo muito menos bateria que o protocolo pesado e sincronizado do NB-IoT.
+                </li>
+            </ul>
+
+            <h4>Resumo do Comparativo Técnico</h4>
+
+            <div style="overflow-x: auto;">
+                <table class="tech-table">
+                    <thead>
+                        <tr>
+                            <th>Característica</th>
+                            <th style="color: #a9b7c6;">Sigfox</th>
+                            <th style="color: var(--led-rx); border-bottom: 2px solid var(--led-rx);">LoRaWAN</th>
+                            <th style="color: #a9b7c6;">NB-IoT</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Modulação Física</td>
+                            <td>BPSK (UNB)</td>
+                            <td style="background-color: rgba(0,255,204,0.05); color: var(--led-rx);">CSS</td>
+                            <td>OFDMA / SC-FDMA</td>
+                        </tr>
+                        <tr>
+                            <td>Espectro</td>
+                            <td>Não Licenciado (ISM)</td>
+                            <td style="background-color: rgba(0,255,204,0.05); color: var(--led-rx);">Não Licenciado (ISM)</td>
+                            <td>Licenciado (LTE)</td>
+                        </tr>
+                        <tr>
+                            <td>Payload Máximo</td>
+                            <td>12 bytes</td>
+                            <td style="background-color: rgba(0,255,204,0.05); color: var(--led-rx);">Até 242 bytes</td>
+                            <td>Até 1600 bytes</td>
+                        </tr>
+                        <tr>
+                            <td>Duração Bateria</td>
+                            <td>Extrema</td>
+                            <td style="background-color: rgba(0,255,204,0.05); color: var(--led-rx);">Alta</td>
+                            <td>Média</td>
+                        </tr>
+                        <tr>
+                            <td>Modelo de Rede</td>
+                            <td>Pública (Monopólio)</td>
+                            <td style="background-color: rgba(0,255,204,0.05); color: var(--led-rx);">Privada / Pública</td>
+                            <td>Pública (Operadoras)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
             <h3>LoRaWAN vs Redes Locais</h3>
         </section>
