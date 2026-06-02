@@ -533,7 +533,7 @@
             <li><a href="#seguranca">04. Segurança</a></li>
             <li><a href="#comparativa">05. Comparação</a></li>
             <li><a href="#pratica">06. Prática</a></li>
-            <li><a href="#conclusao">07. Fim</a></li>
+            <li><a href="#conclusao">07. Referências</a></li>
         </ul>
         <div class="progress-container">
             <div class="progress-bar" id="myBar"></div>
@@ -1547,6 +1547,107 @@
             </div>
 
             <h3>LoRaWAN vs Redes Locais</h3>
+            <p>
+                Quando comparamos o LoRaWAN com as redes locais (como Wi-Fi, Bluetooth Low Energy e Zigbee), não estamos olhando para tecnologias concorrentes diretas, mas sim para ferramentas 
+                projetadas para resolver lados opostos de um dilema fundamental da engenharia de redes, conhecido como o <strong>Triângulo da Conectividade IoT</strong>.
+            </p>
+            <p>
+                Neste triângulo, existem três vértices desejáveis: <strong>Longo Alcance, Alta Taxa de Dados (Banda) e Baixo Consumo de Energia</strong>. As leis da física e da teoria da informação (como o Teorema de Shannon-Hartley) 
+                ditam que você só pode escolher dois.
+            </p>
+
+            <img src="images/triangle_iot.png" width="50%">
+
+            <h4>Wi-Fi (WLAN - IEEE 802.11)</h4>
+            <p>
+                O Wi-Fi escolheu Alta Taxa de Dados e (relativamente) Longo Alcance para ambientes internos, sacrificando totalmente o Consumo de Energia.
+            </p>
+            <ul>
+                <li>
+                    <strong>Física e Protocolo:</strong> O Wi-Fi utiliza modulações complexas (como QAM sobre OFDM) que exigem alta linearidade dos amplificadores de RF, consumindo muita corrente. Além disso, ele é baseado na pilha TCP/IP padrão. 
+                    Manter uma conexão IP ativa exige que o dispositivo envie pacotes de <i>keep-alive</i> constantemente.
+                </li>
+                <li>
+                    <strong>Escolha para IoT:</strong> É excelente para streaming de vídeo, câmeras de segurança e dispositivos ligados na tomada (Smart TVs). Em aplicações remotas como estações de telemetria em plantações, não fazem o menor sentido o uso do Wi-Fi.
+                </li>
+            </ul>
+
+            <h4>Bluetooth Low Energy e ZigBee (WPAN - IEEE 802.15)</h4>
+            <p>
+                Estas tecnologias escolheram Baixo Consumo de Energia e Alta/Média Taxa de Dados, sacrificando o Alcance.
+            </p>
+            <ul>
+                <li>
+                    <strong>Física (A barreira dos 2.4GHz):</strong> Ambas operam tipicamente na banda ISM de 2.4 GHz. Como sabemos pela equação de <i>Free Space Path Loss</i>, frequências mais altas sofrem maior atenuação no ar e têm 
+                    péssima penetração em obstáculos sólidos (paredes, folhagens). O alcance natural fica restrito a 10~30 metros.
+                </li>
+                <li>
+                    <strong>Paradoxo do Zigbee (Rede Mesh):</strong> Para resolver o problema do alcance curto, o Zigbee utiliza uma topologia em Malha (Mesh). Se um sensor está longe do roteador, ele envia a mensagem para o sensor vizinho, q
+                    ue repassa para o próximo, até chegar ao destino. O problema é que para atuar como repetidor, o rádio do sensor vizinho precisa ficar acordado ouvindo o meio, o que destrói a vida útil da bateria dos nós intermediários.
+                </li>
+                <li>
+                    <strong>Escolha para IoT:</strong> Ideais para casas inteligentes e dispositivos de uso pessoal (fones e relógios), onde tudo está no mesmo cômodo ou no próprio corpo do usuário.
+                </li>
+            </ul>
+
+            <h4>LoRaWAN (LPWAN)</h4>
+            <p>
+                Como vimos, o LoRa escolheu Longo Alcance e Baixo Consumo de Energia, sacrificando a Taxa de Dados.
+                Também observamos que o LoRa tem sua ideia centrada em passar por diversos obstáculos com mais facilidade pelo uso de frequências sub-GHz.
+                Ademais, o uso da topologia estrela, permite que os nós finais não precisem repassar mensagens de ninguém, eles apenas acordam, gritam sua própria medição e voltam a dormir.
+            </p>
+
+            <div style="overflow-x: auto;">
+                <table class="tech-table">
+                    <thead>
+                        <tr>
+                            <th>Característica</th>
+                            <th style="color: #a9b7c6;">Wi-Fi (LAN)</th>
+                            <th style="color: #a9b7c6;">BLE / Zigbee (PAN)</th>
+                            <th style="color: var(--led-rx); border-bottom: 2px solid var(--led-rx);">LoRaWAN (LPWAN)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Frequência Típica</td>
+                            <td>2.4 GHz / 5 GHz</td>
+                            <td>2.4 GHz</td>
+                            <td style="background-color: rgba(0,255,204,0.05); color: var(--led-rx);">Sub-GHz (Ex: 915 MHz)</td>
+                        </tr>
+                        <tr>
+                            <td>Alcance Prático</td>
+                            <td>Médio (~50 metros)</td>
+                            <td>Curto (~10 a 30 metros)</td>
+                            <td style="background-color: rgba(0,255,204,0.05); color: var(--led-rx);">Longo (2 a 15+ km)</td>
+                        </tr>
+                        <tr>
+                            <td>Taxa de Dados</td>
+                            <td>Alta (Mbps a Gbps)</td>
+                            <td>Média (Até 2 Mbps)</td>
+                            <td style="background-color: rgba(0,255,204,0.05); color: var(--led-rx);">Baixa (250 bps a 50 kbps)</td>
+                        </tr>
+                        <tr>
+                            <td>Consumo de Energia</td>
+                            <td>Alto (Requer fonte contínua)</td>
+                            <td>Baixo (Meses na bateria)</td>
+                            <td style="background-color: rgba(0,255,204,0.05); color: var(--led-rx);">Mínimo (Anos na bateria)</td>
+                        </tr>
+                        <tr>
+                            <td>Topologia Padrão</td>
+                            <td>Estrela</td>
+                            <td>Ponto a Ponto / Mesh</td>
+                            <td style="background-color: rgba(0,255,204,0.05); color: var(--led-rx);">Estrela-de-Estrelas (ALOHA)</td>
+                        </tr>
+                        <tr>
+                            <td>Foco da Aplicação</td>
+                            <td>Streaming e Banda Larga</td>
+                            <td>Dispositivos Inteligentes</td>
+                            <td style="background-color: rgba(0,255,204,0.05); color: var(--led-rx);">Telemetria Remota e Cidades Inteligentes</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
         </section>
 
         <section id="pratica">
@@ -1564,7 +1665,7 @@
 
         <section id="conclusao">
             <div class="trace-detail"></div>
-            <h2><span class="section-num">0x07</span>Conclusão e Referências</h2>
+            <h2><span class="section-num">0x07</span>Referências</h2>
 
             <h3>Bibliografia</h3>
             <ul>
@@ -1596,7 +1697,7 @@
                     São Paulo: Editora NCB, 2023.
                 </li>
                 <li>
-                    Kurose, J. F., &amp; Ross, K. W. <em>Redes de Computadores e a Internet: Uma Abordagem Top-Down</em>.
+                    KUROSE, J. F., &amp; Ross, K. W. <em>Redes de Computadores e a Internet: Uma Abordagem Top-Down</em>.
                 </li>
             </ul>
         </section>
