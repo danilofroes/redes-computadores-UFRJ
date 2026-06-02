@@ -546,6 +546,67 @@
             color: var(--led-rx);
         }
 
+        /* Estilos da seção sobre */
+        .author-card {
+            background-color: #050a0f;
+            border-left: 3px solid var(--copper-trace);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 0 4px 4px 0;
+            box-shadow: 5px 5px 15px rgba(0,0,0,0.3);
+        }
+
+        .author-name {
+            color: var(--text-light);
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+            font-family: var(--font-display);
+            letter-spacing: 1px;
+        }
+
+        .author-bio {
+            color: #8892b0;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 20px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .btn-social {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 25px;
+            border: 1px solid var(--text-main);
+            color: var(--text-main);
+            text-decoration: none;
+            font-family: var(--font-tech);
+            font-weight: bold;
+            font-size: 0.9rem;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.02);
+            letter-spacing: 1px;
+        }
+
+        .btn-github {
+            border-color: var(--copper-trace);
+            color: var(--copper-trace);
+            background: rgba(212, 175, 55, 0.05);
+        }
+
+        .btn-github:hover {
+            background: var(--copper-trace);
+            color: var(--pcb-dark);
+            box-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+        }
+
         /* Responsividade */
         @media (max-width: 768px) {
 
@@ -1841,7 +1902,8 @@
 
         <section id="conclusao">
             <div class="trace-detail"></div>
-            <h2><span class="section-num">0x07</span>Referências</h2>
+            <h2><span class="section-num">0x07</span> Referências</h2>
+            <h3></h3>
 
             <h3>Bibliografia</h3>
             <ul>
@@ -1876,6 +1938,28 @@
                     KUROSE, J. F., &amp; Ross, K. W. <em>Redes de Computadores e a Internet: Uma Abordagem Top-Down</em>.
                 </li>
             </ul>
+        </section>
+        <section id="sobre">
+            <div class="trace-detail"></div>
+            <h2><span class="section-num">0x08</span>Sobre o Projeto</h2>
+            
+            <p>
+                Este projeto foi desenvolvido como trabalho teórico final para a disciplina <strong>[EEL878] Redes de Computadores I</strong>, ministrada pelo professor Luís Henrique Kosmalski na <strong>Universidade Federal do Rio de Janeiro (UFRJ)</strong>. 
+            </p>
+            
+            <div class="author-card">
+                <div class="author-name">Danilo Davi Gomes Fróes</div>
+                <div class="author-bio">
+                    Graduando em Engenharia Eletrônica e de Computação<br>
+                    UFRJ - Universidade Federal do Rio de Janeiro
+                </div>
+            </div>
+
+            <div class="social-links">
+                <a href="https://github.com/danilofroes" target="_blank" rel="noopener noreferrer" class="btn-social btn-github">
+                    &lt; GITHUB /&gt;
+                </a>
+            </div>
         </section>
     </main>
 
